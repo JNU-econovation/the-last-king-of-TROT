@@ -1,0 +1,9 @@
+<resources>
+    <string name="app_name">트로트끝판왕</string>
+    <string name="title_home">홈</string>
+    <string name="title_genre">장르</string>
+    <string name="title_popular">인기</string>
+    <string name="title_singer">가수</string>
+    <string name="title_video">예능</string>
+    <string name="title_favorite">찜</string>
+</resources>

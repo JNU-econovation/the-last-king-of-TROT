@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <item
+        android:id="@+id/navigation_genre"
+        android:icon="@drawable/ic_home_black_24dp"
+        android:title="@string/title_genre" />
+
+    <item
+        android:id="@+id/navigation_popular"
+        android:icon="@drawable/ic_dashboard_black_24dp"
+        android:title="@string/title_popular" />
+
+    <item
+        android:id="@+id/navigation_singer"
+        android:icon="@drawable/ic_notifications_black_24dp"
+        android:title="@string/title_singer" />
+
+    <item
+        android:id="@+id/navigation_video"
+        android:icon="@drawable/ic_dashboard_black_24dp"
+        android:title="@string/title_video" />
+
+    <item
+        android:id="@+id/navigation_favorite"
+        android:icon="@drawable/ic_home_black_24dp"
+        android:title="@string/title_favorite" />
+
+</menu>
