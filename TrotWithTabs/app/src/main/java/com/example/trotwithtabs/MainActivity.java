@@ -8,13 +8,22 @@ import androidx.fragment.app.ListFragment;
 
 import android.os.Build;
 import android.os.Bundle;
+import android.view.View;
+import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
+import android.widget.BaseAdapter;
+import android.widget.ListView;
 
 import com.google.android.material.tabs.TabLayout;
 
+import java.util.ArrayList;
+
 public class MainActivity extends AppCompatActivity {
-    static final String[] Singer_List = {"임영웅", "정동원", "이찬원","영탁","김호중","장민호","김희재","조명섭","송가인","나훈아","장윤정"} ;
-    Home fragment1;
+    Home fragment0;
+    Genre fragment1;
+    Popular fragment2;
+    Singer fragment3;
+    Comedy fragment4;
     Jjim fragment5;
 
 
@@ -27,7 +36,11 @@ public class MainActivity extends AppCompatActivity {
        androidx.appcompat.widget.Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
 
-        fragment1 = new Home();
+        fragment0 = new Home();
+        fragment1 = new Genre();
+        fragment2 = new Popular();
+        fragment3 = new Singer();
+        fragment4 = new Comedy();
         fragment5 = new Jjim();
 
         getSupportFragmentManager().beginTransaction().add(R.id.container,fragment1).commit();
@@ -47,8 +60,16 @@ public class MainActivity extends AppCompatActivity {
 
                 Fragment selected = null;
                 if(position == 0) {
+                    selected = fragment0;
+                }else if(position==1){
                     selected = fragment1;
-                } else if(position==5){
+                }else if(position==2){
+                    selected = fragment2;
+                }else if(position==3){
+                    selected = fragment3;
+                }else if(position==4){
+                    selected = fragment4;
+                }else if(position==5){
                     selected = fragment5;
                 }
 
@@ -68,4 +89,5 @@ public class MainActivity extends AppCompatActivity {
         });
 
     }
+
 }
