@@ -26,6 +26,7 @@ public class MainActivity extends AppCompatActivity {
     Comedy fragment4;
     Jjim fragment5;
 
+    Bundle mBundle;  //main bundle
 
     @RequiresApi(api = Build.VERSION_CODES.LOLLIPOP)
     @Override
@@ -43,7 +44,7 @@ public class MainActivity extends AppCompatActivity {
         fragment4 = new Comedy();
         fragment5 = new Jjim();
 
-        getSupportFragmentManager().beginTransaction().add(R.id.container,fragment1).commit();
+        getSupportFragmentManager().beginTransaction().replace(R.id.container,fragment0).commit();
 
         TabLayout tabs = (TabLayout) findViewById(R.id.tabs);
         tabs.addTab(tabs.newTab().setText("홈"));
@@ -89,5 +90,8 @@ public class MainActivity extends AppCompatActivity {
         });
 
     }
+    public void fragBtnClick(Bundle bundle) {
+        this.mBundle = bundle;
+    } //fragBtnClcick()
 
 }
