@@ -6,7 +6,7 @@ android {
 
     defaultConfig {
         applicationId "com.example.trotwithtabs"
-        minSdkVersion 16
+        minSdkVersion 21
         targetSdkVersion 30
         versionCode 1
         versionName "1.0"
@@ -39,5 +39,9 @@ dependencies {
     implementation 'com.google.http-client:google-http-client-android:+'
     implementation 'com.google.api-client:google-api-client-android:+'
     implementation 'com.google.api-client:google-api-client-gson:+'
+
+    implementation 'com.google.android.material:material:1.1.0'
+    implementation 'com.pierfrancescosoffritti.androidyoutubeplayer:core:10.0.5'
+
 
 }

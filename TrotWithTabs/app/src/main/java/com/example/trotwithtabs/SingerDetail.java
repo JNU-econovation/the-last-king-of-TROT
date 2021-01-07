@@ -4,10 +4,12 @@ import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
+import android.os.Parcelable;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.AdapterView;
 import android.widget.BaseAdapter;
 import android.widget.Button;
 import android.widget.ImageView;
@@ -23,6 +25,8 @@ import com.google.android.material.tabs.TabLayout;
 import java.util.ArrayList;
 import java.util.List;
 
+import nodeal.example.you_tube_recyclerview.YoutubeSinger;
+
 public class SingerDetail extends Fragment {
     MainActivity activity;
     Context context;
@@ -33,6 +37,8 @@ public class SingerDetail extends Fragment {
     ArrayList<SingerInfoList> list;
 
     private static final String TAG = "singer";
+
+    Fragment YoutubeSinger = new YoutubeSinger();
 
     public void onAttach(@NonNull Context context) {
         super.onAttach(context);
@@ -56,16 +62,7 @@ public class SingerDetail extends Fragment {
         ViewGroup rootView = (ViewGroup) inflater.inflate(R.layout.singer, container, false);
         ListView listView = (ListView) rootView.findViewById(R.id.listViewSinger);
         try{
-        //if(activity.mBundle != null){
-          //  Bundle bundle = activity.mBundle;
-            //SingerInfo singerInfo1= (SingerInfo) bundle.getSerializable("singerInfo1");
-            //title=singerInfo1.getTitle();
-            //Id=singerInfo1.getId();
-            //thumbnail=singerInfo1.getThumbnail();
-         //  list = bundle.getParcelableArrayList("singerInfoList");
-          //  Log.d(TAG,list.get(0).title);
 
-        //}
             if(getArguments() != null) {
                 list = getArguments().getParcelableArrayList("singerInfoList");
                 Log.d(TAG,list.get(0).title);
@@ -78,6 +75,22 @@ public class SingerDetail extends Fragment {
             }
 
         listView.setAdapter(adapter);
+
+            listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+
+
+                @Override
+                public void onItemClick(AdapterView<?> parent, View view,
+                                        int position, long id) {
+
+                    Bundle bundle=new Bundle();
+                    bundle.putString("Id", list.get(position).Id);
+                    YoutubeSinger.setArguments(bundle);
+
+                    ((MainActivity)getActivity()).getSupportFragmentManager().beginTransaction().replace(R.id.container, YoutubeSinger).commit();
+
+                }
+            });
         }catch(Exception e){
             System.err.println("오류 있음 "+e.getMessage()+e.getCause());
         }
