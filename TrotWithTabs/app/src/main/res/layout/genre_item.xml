@@ -6,7 +6,6 @@
     android:orientation="horizontal"
     android:descendantFocusability="blocksDescendants">
 
-
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="60dp"
@@ -33,6 +32,4 @@
 
 
     </LinearLayout>
-
-
 </LinearLayout>

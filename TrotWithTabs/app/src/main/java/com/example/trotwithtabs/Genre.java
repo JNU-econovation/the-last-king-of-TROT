@@ -196,7 +196,6 @@ public class Genre extends Fragment {
         }
     }
 
-
     class GenreAdapter extends BaseAdapter {
         ArrayList<GenreItem> items = new ArrayList<GenreItem>();
 
@@ -227,9 +226,10 @@ public class Genre extends Fragment {
             view.setName(item.getName());
             return view;
         }
-
+  
         private void getApplicationContext() {
         }
     }
 
 }
+
