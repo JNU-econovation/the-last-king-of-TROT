@@ -55,26 +55,19 @@ public class Singer extends Fragment {
         super.onAttach(context);
         this.context = context;
 
-        //메시지 송수신에 필요한 객체 초기화
         activity = (MainActivity) getActivity();
-       // singerInfo1 = new SingerInfo("dd","dd","ss");
-       //singerInfoList= new ArrayList<>();
-
-
 
     }
 
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-
     }
 
     @Nullable
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         ViewGroup rootView = (ViewGroup)inflater.inflate(R.layout.singer, container, false);
-
 
         ListView listView = (ListView) rootView.findViewById(R.id.listViewSinger);
 
@@ -100,7 +93,6 @@ public class Singer extends Fragment {
             @Override
             public void onItemClick(AdapterView<?> parent, View view,
                                     int position, long id) {
-
 
                 YoutubeAsyncTask youtubeAsyncTask = new YoutubeAsyncTask();
                 youtubeAsyncTask.execute();
@@ -174,9 +166,7 @@ public class Singer extends Fragment {
             singerInfoList=singerInfoList2;
 
             Bundle bundle=new Bundle();
-            // bundle.putSerializable("singerInfo1", (Serializable) singerInfo1);
             bundle.putParcelableArrayList("singerInfoList",(ArrayList<? extends Parcelable>) singerInfoList);
-            //activity.fragBtnClick(bundle); //의문..
             singerDetailFragment.setArguments(bundle);
 
             ((MainActivity)getActivity()).getSupportFragmentManager().beginTransaction().replace(R.id.container, singerDetailFragment).commit();
