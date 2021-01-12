@@ -25,26 +25,26 @@ import com.google.android.material.tabs.TabLayout;
 import java.util.ArrayList;
 import java.util.List;
 
-import nodeal.example.you_tube_recyclerview.YoutubeGenre;
-import nodeal.example.you_tube_recyclerview.YoutubeGenre;
+import nodeal.example.you_tube_recyclerview.YoutubeSinger;
 
-public class GenreDetail extends Fragment {
+public class ComedyDetail extends Fragment {
     MainActivity activity;
     Context context;
 
     String title;
     String Id;
     String thumbnail;
-    ArrayList<GenreInfoList> list;
+    ArrayList<SingerInfoList> list;
 
-    private static final String TAG = "genre";
+    private static final String TAG = "comedy";
 
-    Fragment YoutubeGenre = new YoutubeGenre();
+    Fragment YoutubeSinger = new YoutubeSinger();
 
     public void onAttach(@NonNull Context context) {
         super.onAttach(context);
         this.context = context;
 
+        //메시지 송수신에 필요한 객체 초기화
         activity = (MainActivity) getActivity();
     }
 
@@ -57,19 +57,21 @@ public class GenreDetail extends Fragment {
     @Nullable
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
-        ViewGroup rootView = (ViewGroup) inflater.inflate(R.layout.genre, container, false);
-        ListView listView = (ListView) rootView.findViewById(R.id.listViewGenre);
+        //XML, java 연결
+        //XML이 메인에 직접 붙으면 true, 프래그먼트에 붙으면 false
+        ViewGroup rootView = (ViewGroup) inflater.inflate(R.layout.singer, container, false);
+        ListView listView = (ListView) rootView.findViewById(R.id.listViewSinger);
         try{
 
             if(getArguments() != null) {
-                list = getArguments().getParcelableArrayList("genreInfoList");
+                list = getArguments().getParcelableArrayList("singerInfoList");
                 Log.d(TAG,list.get(0).title);
             }
 
-            GenreDetailAdapter adapter = new GenreDetailAdapter();
+            SingerDetailAdapter adapter = new SingerDetailAdapter();
 
             for (int i = 0; i < 15; i++) {
-                adapter.addItem(new GenreItem(list.get(i).title));
+                adapter.addItem(new SingerItem(list.get(i).title));
             }
 
             listView.setAdapter(adapter);
@@ -83,9 +85,9 @@ public class GenreDetail extends Fragment {
 
                     Bundle bundle=new Bundle();
                     bundle.putString("Id", list.get(position).Id);
-                    YoutubeGenre.setArguments(bundle);
+                    YoutubeSinger.setArguments(bundle);
 
-                    ((MainActivity)getActivity()).getSupportFragmentManager().beginTransaction().replace(R.id.container, YoutubeGenre).commit();
+                    ((MainActivity)getActivity()).getSupportFragmentManager().beginTransaction().replace(R.id.container, YoutubeSinger).commit();
 
                 }
             });
@@ -95,15 +97,15 @@ public class GenreDetail extends Fragment {
 
         return rootView;
     }
-    class GenreDetailAdapter extends BaseAdapter {
-        ArrayList<GenreItem> items = new ArrayList<GenreItem>();
+    class SingerDetailAdapter extends BaseAdapter {
+        ArrayList<SingerItem> items = new ArrayList<SingerItem>();
 
         @Override
         public int getCount() {
             return items.size();
         }
 
-        public void addItem(GenreItem item){
+        public void addItem(SingerItem item){
             items.add(item);
         }
 
@@ -119,9 +121,9 @@ public class GenreDetail extends Fragment {
 
         @Override
         public View getView(int position, View convertView, ViewGroup parent) {
-            GenreDetailView view = new GenreDetailView(getContext());
+            SingerDetailView view = new SingerDetailView(getContext());
 
-            GenreItem item = items.get(position);
+            SingerItem item = items.get(position);
             view.setName(item.getName());
             return view;
         }
