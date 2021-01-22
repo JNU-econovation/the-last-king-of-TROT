@@ -42,13 +42,13 @@ public class Singer extends Fragment {
 
     private static final String TAG = "singer";
 
-    private String API_KEY = "AIzaSyCYCo80nxyEgApqfVmfilFC04T-rXWBRBI";
+    private String API_KEY = "AIzaSyA7bO2_1TlpoAQZFDuUd6jykS82p2CoZiA";
     private String result;
     int singerPosition;
     String[] list_singer = {"임영웅","정동원","이찬원","영탁","김호중","장민호","김희재","조명섭","송가인","나훈아","장윤정"};
     ArrayList<SingerInfoList> singerInfoList;
-    ArrayList<SingerInfoList> singerInfoList2 = new ArrayList<>();
-
+    ArrayList<SingerInfoList> singerInfoList2;
+    String singerName;
 
 
     public void onAttach(@NonNull Context context) {
@@ -83,7 +83,6 @@ public class Singer extends Fragment {
         adapter.addItem(new SingerItem("송가인"));
         adapter.addItem(new SingerItem("나훈아"));
         adapter.addItem(new SingerItem("장윤정"));
-        adapter.addItem(new SingerItem("nct"));
 
         listView.setAdapter(adapter);
 
@@ -93,10 +92,10 @@ public class Singer extends Fragment {
             @Override
             public void onItemClick(AdapterView<?> parent, View view,
                                     int position, long id) {
-
+                singerPosition= ReturnSingerPosition(position);
                 YoutubeAsyncTask youtubeAsyncTask = new YoutubeAsyncTask();
                 youtubeAsyncTask.execute();
-                singerPosition= ReturnSingerPosition(position);
+                Log.d(TAG,list_singer[singerPosition]);
 
             }
         });
@@ -112,6 +111,7 @@ public class Singer extends Fragment {
         @Override
         protected void onPreExecute() {
             super.onPreExecute();
+
         }
 
         @Override
@@ -130,7 +130,7 @@ public class Singer extends Fragment {
 
                 search.setKey(API_KEY);
 
-                String singerName=list_singer[singerPosition];
+                singerName=list_singer[singerPosition];
                 search.setQ(singerName);
                 // search.setChannelId("UCk9GmdlDTBfgGRb7vXeRMoQ"); //레드벨벳 공식 유투브 채널
                 search.setOrder("relevance"); //date relevance
@@ -168,8 +168,9 @@ public class Singer extends Fragment {
             Bundle bundle=new Bundle();
             bundle.putParcelableArrayList("singerInfoList",(ArrayList<? extends Parcelable>) singerInfoList);
             singerDetailFragment.setArguments(bundle);
+            Log.d(TAG,singerInfoList.get(0).title);
 
-            ((MainActivity)getActivity()).getSupportFragmentManager().beginTransaction().replace(R.id.container, singerDetailFragment).commit();
+            ((MainActivity)getActivity()).getSupportFragmentManager().beginTransaction().replace(R.id.container, singerDetailFragment).addToBackStack(null).commit();
         }
 
         public void prettyPrint(Iterator<SearchResult> iteratorSearchResults, String query) {
@@ -178,6 +179,8 @@ public class Singer extends Fragment {
             }
 
             StringBuilder sb = new StringBuilder();
+
+            singerInfoList2 = new ArrayList<>();
 
             while (iteratorSearchResults.hasNext()) {
                 SearchResult singleVideo = iteratorSearchResults.next();
@@ -189,7 +192,6 @@ public class Singer extends Fragment {
                     Thumbnail thumbnail = (Thumbnail) singleVideo.getSnippet().getThumbnails().get("default");
                     singerInfoList2.add(new SingerInfoList(singleVideo.getSnippet().getTitle(),rId.getVideoId(),thumbnail.getUrl()));
                     Log.d(TAG,singerInfoList2.get(0).title);
-                    Log.d(TAG,"하긴 함");
                 }
 
             }

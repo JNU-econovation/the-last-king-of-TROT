@@ -9,10 +9,14 @@ import androidx.fragment.app.Fragment;
 import androidx.fragment.app.ListFragment;
 
 import android.content.Context;
+import android.content.pm.PackageInfo;
+import android.content.pm.PackageManager;
+import android.content.pm.Signature;
 import android.os.AsyncTask;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.Parcelable;
+import android.util.Base64;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -21,6 +25,7 @@ import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.BaseAdapter;
 import android.widget.ListView;
+import android.widget.Toast;
 
 import com.google.android.material.tabs.TabLayout;
 import com.google.api.client.googleapis.json.GoogleJsonResponseException;
@@ -37,9 +42,14 @@ import com.google.api.services.youtube.model.SearchResult;
 import com.google.api.services.youtube.model.Thumbnail;
 
 import java.io.IOException;
+import java.security.MessageDigest;
+import java.security.NoSuchAlgorithmException;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Stack;
+
+import com.kakao.util.*;
 
 public class MainActivity extends AppCompatActivity {
     Home fragment0;
@@ -51,14 +61,23 @@ public class MainActivity extends AppCompatActivity {
 
     Bundle mBundle;  //main bundle
 
+    private long backKeyPressedTime = 0;
+    private Toast toast;
+
+
     @RequiresApi(api = Build.VERSION_CODES.LOLLIPOP)
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
+        getHashKey();
+        String keyHash = com.kakao.util.helper.Utility.getKeyHash(this /* context */);
+        Log.d(TAG,keyHash);
+
        androidx.appcompat.widget.Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
+
 
         fragment0 = new Home();
         fragment1 = new Genre();
@@ -118,6 +137,7 @@ public class MainActivity extends AppCompatActivity {
         });
 
     }
+
     public void fragBtnClick(Bundle bundle) {
         this.mBundle = bundle;
     } //fragBtnClcick()
@@ -127,7 +147,7 @@ public class MainActivity extends AppCompatActivity {
 
     private static final String TAG = "singer";
 
-    private String API_KEY = "AIzaSyCYCo80nxyEgApqfVmfilFC04T-rXWBRBI";
+    private String API_KEY = "AIzaSyA7bO2_1TlpoAQZFDuUd6jykS82p2CoZiA";
     private String result;
 
     ArrayList<SingerInfoList> singerInfoList;
@@ -213,7 +233,6 @@ public class MainActivity extends AppCompatActivity {
 
                     Thumbnail thumbnail = (Thumbnail) singleVideo.getSnippet().getThumbnails().get("default");
                     singerInfoList2.add(new SingerInfoList(singleVideo.getSnippet().getTitle(),rId.getVideoId(),thumbnail.getUrl()));
-                    Log.d(TAG,singerInfoList2.get(0).title);
                     Log.d(TAG,"하긴 함");
                 }
 
@@ -256,6 +275,26 @@ public class MainActivity extends AppCompatActivity {
         }
 
         private void getApplicationContext() {
+        }
+    }
+    private void getHashKey(){
+        PackageInfo packageInfo = null;
+        try {
+            packageInfo = getPackageManager().getPackageInfo(getPackageName(), PackageManager.GET_SIGNATURES);
+        } catch (PackageManager.NameNotFoundException e) {
+            e.printStackTrace();
+        }
+        if (packageInfo == null)
+            Log.e("KeyHash", "KeyHash:null");
+
+        for (Signature signature : packageInfo.signatures) {
+            try {
+                MessageDigest md = MessageDigest.getInstance("SHA");
+                md.update(signature.toByteArray());
+                Log.d("KeyHash", Base64.encodeToString(md.digest(), Base64.DEFAULT));
+            } catch (NoSuchAlgorithmException e) {
+                Log.e("KeyHash", "Unable to get MessageDigest. signature=" + signature, e);
+            }
         }
     }
 

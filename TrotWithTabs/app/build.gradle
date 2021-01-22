@@ -43,5 +43,9 @@ dependencies {
     implementation 'com.google.android.material:material:1.1.0'
     implementation 'com.pierfrancescosoffritti.androidyoutubeplayer:core:10.0.5'
 
+    compile group: 'com.google.http-client', name: 'google-http-client-jackson2', version: '1.11.0-beta'
+
+    implementation group: 'com.kakao.sdk', name: 'kakaolink', version: project.KAKAO_SDK_VERSION
+
 
 }
