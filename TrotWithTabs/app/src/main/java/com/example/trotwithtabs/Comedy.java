@@ -45,12 +45,12 @@ public class Comedy extends Fragment {
 
     private static final String TAG = "singer";
 
-    private String API_KEY = "AIzaSyCYCo80nxyEgApqfVmfilFC04T-rXWBRBI";
+    private String API_KEY = "AIzaSyA7bO2_1TlpoAQZFDuUd6jykS82p2CoZiA";
     private String result;
     int singerPosition;
     String[] list_singer = {"뽕숭아학당","사랑의 콜센타","트롯 전국체전","트로트의 민족"};
     ArrayList<SingerInfoList> singerInfoList;
-    ArrayList<SingerInfoList> singerInfoList2 = new ArrayList<>();
+    ArrayList<SingerInfoList> singerInfoList2;
 
 
 
@@ -164,7 +164,7 @@ public class Comedy extends Fragment {
             bundle.putParcelableArrayList("singerInfoList",(ArrayList<? extends Parcelable>) singerInfoList);
             comedyDetailFragment.setArguments(bundle);
 
-            ((MainActivity)getActivity()).getSupportFragmentManager().beginTransaction().replace(R.id.container, comedyDetailFragment).commit();
+            ((MainActivity)getActivity()).getSupportFragmentManager().beginTransaction().replace(R.id.container, comedyDetailFragment).addToBackStack(null).commit();
         }
 
         public void prettyPrint(Iterator<SearchResult> iteratorSearchResults, String query) {
@@ -173,6 +173,8 @@ public class Comedy extends Fragment {
             }
 
             StringBuilder sb = new StringBuilder();
+
+            singerInfoList2 = new ArrayList<>();
 
             while (iteratorSearchResults.hasNext()) {
                 SearchResult singleVideo = iteratorSearchResults.next();

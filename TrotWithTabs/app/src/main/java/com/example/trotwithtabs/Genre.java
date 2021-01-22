@@ -42,12 +42,12 @@ public class Genre extends Fragment {
 
     private static final String TAG = "genre";
 
-    private String API_KEY = "AIzaSyCYCo80nxyEgApqfVmfilFC04T-rXWBRBI";
+    private String API_KEY = "AIzaSyA7bO2_1TlpoAQZFDuUd6jykS82p2CoZiA";
     private String result;
     int genrePosition;
     String[] list_genre = {"트로트 메들리","댄스트로트","전설의 트로트","최신 트로트","보이스트롯","미스트롯 송가인","미스터트롯","7080 메들리","7080 인기가수","강변가요제","대학가요제"};
     ArrayList<GenreInfoList> genreInfoList;
-    ArrayList<GenreInfoList> genreInfoList2 = new ArrayList<>();
+    ArrayList<GenreInfoList> genreInfoList2;
 
 
 
@@ -168,7 +168,7 @@ public class Genre extends Fragment {
             bundle.putParcelableArrayList("genreInfoList",(ArrayList<? extends Parcelable>) genreInfoList);
             genreDetailFragment.setArguments(bundle);
 
-            ((MainActivity)getActivity()).getSupportFragmentManager().beginTransaction().replace(R.id.container, genreDetailFragment).commit();
+            ((MainActivity)getActivity()).getSupportFragmentManager().beginTransaction().replace(R.id.container, genreDetailFragment).addToBackStack(null).commit();
         }
 
         public void prettyPrint(Iterator<SearchResult> iteratorSearchResults, String query) {
@@ -177,6 +177,8 @@ public class Genre extends Fragment {
             }
 
             StringBuilder sb = new StringBuilder();
+
+            genreInfoList2 = new ArrayList<>();
 
             while (iteratorSearchResults.hasNext()) {
                 SearchResult singleVideo = iteratorSearchResults.next();
@@ -208,6 +210,7 @@ public class Genre extends Fragment {
 
         public void addItem(GenreItem item){
             items.add(item);
+            this.notifyDataSetChanged();
         }
 
         @Override

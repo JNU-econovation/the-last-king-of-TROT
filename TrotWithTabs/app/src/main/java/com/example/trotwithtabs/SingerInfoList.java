@@ -1,7 +1,10 @@
 package com.example.trotwithtabs;
 
+import android.os.Bundle;
 import android.os.Parcel;
 import android.os.Parcelable;
+
+import androidx.annotation.Nullable;
 
 public class SingerInfoList implements Parcelable {
     public String title;

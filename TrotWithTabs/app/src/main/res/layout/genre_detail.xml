@@ -16,8 +16,8 @@
 
         <ImageView
             android:id="@+id/imageView"
-            android:layout_width="25dp"
-            android:layout_height="wrap_content"
+            android:layout_width="45dp"
+            android:layout_height="60dp"
             android:layout_weight="1"
             android:gravity="left"
             tools:srcCompat="@tools:sample/avatars" />
@@ -27,9 +27,9 @@
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_marginTop="15dp"
-            android:layout_weight="3"
+            android:layout_weight="4"
             android:gravity="center"
-            android:text="장르명"
+            android:text="가수명"
             android:textSize="20dp" />
 
         <Button
@@ -38,7 +38,19 @@
             android:layout_height="wrap_content"
             android:layout_marginTop="7dp"
             android:layout_weight="1"
-            android:text="찜하기" />
+            android:minHeight="0dp"
+            android:minWidth="0dp"
+            android:text="찜" />
+
+        <Button
+            android:id="@+id/button2"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="7dp"
+            android:layout_weight="1"
+            android:minHeight="0dp"
+            android:minWidth="0dp"
+            android:text="공유" />
 
 
     </LinearLayout>

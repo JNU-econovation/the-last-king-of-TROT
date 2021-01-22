@@ -1,8 +1,12 @@
 package com.example.trotwithtabs;
 
 import android.app.Activity;
+import android.app.Application;
 import android.content.Context;
 import android.content.Intent;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
+import android.os.AsyncTask;
 import android.os.Bundle;
 import android.os.Parcelable;
 import android.util.Log;
@@ -22,23 +26,35 @@ import androidx.fragment.app.Fragment;
 
 import com.google.android.material.tabs.TabLayout;
 
+import java.net.URL;
 import java.util.ArrayList;
 import java.util.List;
 
 import nodeal.example.you_tube_recyclerview.YoutubeSinger;
 
+import com.kakao.kakaolink.v2.KakaoLinkResponse;
+import com.kakao.kakaolink.v2.KakaoLinkService;
+import com.kakao.message.template.ButtonObject;
+import com.kakao.message.template.ContentObject;
+import com.kakao.message.template.FeedTemplate;
+import com.kakao.message.template.LinkObject;
+import com.kakao.network.ErrorResult;
+import com.kakao.network.callback.ResponseCallback;
+
+import java.util.HashMap;
+import java.util.Map;
+
 public class SingerDetail extends Fragment {
     MainActivity activity;
     Context context;
-
+    ArrayList<SingerInfoList> list;
+    private static final String TAG = "singerDetail";
+    Fragment YoutubeSinger = new YoutubeSinger();
     String title;
     String Id;
     String thumbnail;
-    ArrayList<SingerInfoList> list;
-
-    private static final String TAG = "singer";
-
-    Fragment YoutubeSinger = new YoutubeSinger();
+    
+    private View header;
 
     public void onAttach(@NonNull Context context) {
         super.onAttach(context);
@@ -51,7 +67,6 @@ public class SingerDetail extends Fragment {
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-
     }
 
     @Nullable
@@ -60,12 +75,13 @@ public class SingerDetail extends Fragment {
         //XML, java 연결
         //XML이 메인에 직접 붙으면 true, 프래그먼트에 붙으면 false
         ViewGroup rootView = (ViewGroup) inflater.inflate(R.layout.singer, container, false);
-        ListView listView = (ListView) rootView.findViewById(R.id.listViewSinger);
-        try{
+        final ListView listView = (ListView) rootView.findViewById(R.id.listViewSinger);
 
-            if(getArguments() != null) {
+        try {
+
+            if (getArguments() != null) {
                 list = getArguments().getParcelableArrayList("singerInfoList");
-                Log.d(TAG,list.get(0).title);
+                Log.d(TAG, list.get(0).title);
             }
 
             SingerDetailAdapter adapter = new SingerDetailAdapter();
@@ -74,7 +90,7 @@ public class SingerDetail extends Fragment {
                 adapter.addItem(new SingerItem(list.get(i).title));
             }
 
-        listView.setAdapter(adapter);
+            listView.setAdapter(adapter);
 
             listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
 
@@ -83,20 +99,32 @@ public class SingerDetail extends Fragment {
                 public void onItemClick(AdapterView<?> parent, View view,
                                         int position, long id) {
 
-                    Bundle bundle=new Bundle();
+                    Id = list.get(position).Id;
+                    title = list.get(position).title;
+                    thumbnail = list.get(position).thumbnail;
+
+                    Bundle bundle = new Bundle();
                     bundle.putString("Id", list.get(position).Id);
+                    bundle.putParcelableArrayList("list", (ArrayList<? extends Parcelable>) list);
+                    bundle.putInt("firstPosition", position);
                     YoutubeSinger.setArguments(bundle);
 
-                    ((MainActivity)getActivity()).getSupportFragmentManager().beginTransaction().replace(R.id.container, YoutubeSinger).commit();
+                    ((MainActivity) getActivity()).getSupportFragmentManager().beginTransaction().replace(R.id.container, YoutubeSinger).addToBackStack(null).commit();
 
                 }
             });
-        }catch(Exception e){
-            System.err.println("오류 있음 "+e.getMessage()+e.getCause());
+
+        } catch (Exception e) {
+            System.err.println("오류 있음 " + e.getMessage() + e.getCause());
         }
 
         return rootView;
     }
+
+    public String getTitle(){
+        return title;
+    }
+
     class SingerDetailAdapter extends BaseAdapter {
         ArrayList<SingerItem> items = new ArrayList<SingerItem>();
 
@@ -105,7 +133,7 @@ public class SingerDetail extends Fragment {
             return items.size();
         }
 
-        public void addItem(SingerItem item){
+        public void addItem(SingerItem item) {
             items.add(item);
         }
 
@@ -120,15 +148,108 @@ public class SingerDetail extends Fragment {
         }
 
         @Override
-        public View getView(int position, View convertView, ViewGroup parent) {
-            SingerDetailView view = new SingerDetailView(getContext());
+        public View getView(final int position, View convertView, ViewGroup parent) {
+            final SingerDetailView view = new SingerDetailView(getContext());
 
             SingerItem item = items.get(position);
             view.setName(item.getName());
+
+            ImageView imageView = view.findViewById(R.id.imageView);
+            String imageUrl = list.get(position).thumbnail;
+            ImageLoadTask task = new ImageLoadTask(imageUrl,imageView);
+            task.execute();
+
+            Button button2 = (Button) view.findViewById(R.id.button2);
+            button2.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    try {
+
+                            FeedTemplate params = FeedTemplate
+                                    .newBuilder(ContentObject.newBuilder(list.get(position).title,
+                                            list.get(position).thumbnail,
+                                            LinkObject.newBuilder().setWebUrl("https://www.youtube.com/watch?v="+list.get(position).Id)
+                                                    .setMobileWebUrl("https://www.youtube.com/watch?v="+list.get(position).Id).build())
+                                            .setDescrption("이미지를 클릭하면 해당 영상의 유튜브 링크로 연결됩니다.")
+                                            .build())
+                                    .build();
+
+                            Map<String, String> serverCallbackArgs = new HashMap<String, String>();
+                            serverCallbackArgs.put("user_id", "${current_user_id}");
+                            serverCallbackArgs.put("product_id", "${shared_product_id}");
+
+
+                            KakaoLinkService.getInstance().sendDefault(getContext(), params, new ResponseCallback<KakaoLinkResponse>() {
+                                @Override
+                                public void onFailure(ErrorResult errorResult) {
+                                }
+
+                                @Override
+                                public void onSuccess(KakaoLinkResponse result) {
+                                }
+                            });
+
+                    } catch (Exception e) {
+                        System.err.println("오류 있음 " + e.getMessage() + e.getCause());
+                    }
+                }
+            });
+
             return view;
         }
 
         private void getApplicationContext() {
+        }
+    }
+    private class ImageLoadTask extends AsyncTask<Void,Void, Bitmap> {
+
+        private String urlStr;
+        private ImageView imageView;
+        private HashMap<String, Bitmap> bitmapHash = new HashMap<String, Bitmap>();
+
+        public ImageLoadTask(String urlStr, ImageView imageView) {
+            this.urlStr = urlStr;
+            this.imageView = imageView;
+        }
+
+        @Override
+        protected void onPreExecute() {
+            super.onPreExecute();
+        }
+
+        @Override
+        protected Bitmap doInBackground(Void... voids) {
+            Bitmap bitmap = null;
+            try {
+                if (bitmapHash.containsKey(urlStr)) {
+                    Bitmap oldbitmap = bitmapHash.remove(urlStr);
+                    if(oldbitmap != null) {
+                        oldbitmap.recycle();
+                        oldbitmap = null;
+                    }
+                }
+                URL url = new URL(urlStr);
+                bitmap = BitmapFactory.decodeStream(url.openConnection().getInputStream());
+
+                bitmapHash.put(urlStr,bitmap);
+
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+
+            return bitmap;
+        }
+        @Override
+        protected void onProgressUpdate(Void... values) {
+            super.onProgressUpdate(values);
+        }
+
+        @Override
+        protected void onPostExecute(Bitmap bitmap) {
+            super.onPostExecute(bitmap);
+
+            imageView.setImageBitmap(bitmap);
+            imageView.invalidate();
         }
     }
 }
