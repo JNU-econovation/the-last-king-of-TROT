@@ -49,14 +49,11 @@ public class Genre extends Fragment {
     ArrayList<GenreInfoList> genreInfoList;
     ArrayList<GenreInfoList> genreInfoList2;
 
-
-
     public void onAttach(@NonNull Context context) {
         super.onAttach(context);
         this.context = context;
 
         activity = (MainActivity) getActivity();
-
     }
 
     @Override
@@ -72,17 +69,9 @@ public class Genre extends Fragment {
         ListView listView = (ListView) rootView.findViewById(R.id.listViewGenre);
 
         GenreAdapter adapter = new GenreAdapter();
-        adapter.addItem(new GenreItem("트로트 메들리"));
-        adapter.addItem(new GenreItem("댄스트로트"));
-        adapter.addItem(new GenreItem("전설의 트로트"));
-        adapter.addItem(new GenreItem("최신 트로트"));
-        adapter.addItem(new GenreItem("보이스트롯"));
-        adapter.addItem(new GenreItem("미스트롯 송가인"));
-        adapter.addItem(new GenreItem("미스터트롯"));
-        adapter.addItem(new GenreItem("7080 메들리"));
-        adapter.addItem(new GenreItem("7080 인기가수"));
-        adapter.addItem(new GenreItem("강변가요제"));
-        adapter.addItem(new GenreItem("대학가요제"));
+        for (int i = 0; i < list_genre.length; i++) {
+            adapter.addItem(new GenreItem(list_genre[i]));
+        }
 
         listView.setAdapter(adapter);
 
@@ -92,11 +81,9 @@ public class Genre extends Fragment {
             @Override
             public void onItemClick(AdapterView<?> parent, View view,
                                     int position, long id) {
-
                 YoutubeAsyncTask youtubeAsyncTask = new YoutubeAsyncTask();
                 youtubeAsyncTask.execute();
                 genrePosition= ReturnGenrePosition(position);
-
             }
         });
 
@@ -130,6 +117,7 @@ public class Genre extends Fragment {
                 search.setKey(API_KEY);
 
                 String genreName=list_genre[genrePosition];
+                //검색어 들어가는 부분
                 search.setQ(genreName);
                 // search.setChannelId("UCk9GmdlDTBfgGRb7vXeRMoQ"); //레드벨벳 공식 유투브 채널
                 search.setOrder("relevance"); //date relevance
@@ -142,6 +130,7 @@ public class Genre extends Fragment {
 
                 List<SearchResult> searchResultList = searchResponse.getItems();
 
+                //검색어 들어가는 부분
                 if (searchResultList != null) {
                     prettyPrint(searchResultList.iterator(), genreName);
                 }

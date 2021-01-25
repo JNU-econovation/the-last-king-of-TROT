@@ -75,7 +75,7 @@ public class MainActivity extends AppCompatActivity {
         String keyHash = com.kakao.util.helper.Utility.getKeyHash(this /* context */);
         Log.d(TAG,keyHash);
 
-       androidx.appcompat.widget.Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
+       Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
 
 

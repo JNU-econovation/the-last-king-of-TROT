@@ -3,11 +3,13 @@ package com.example.trotwithtabs;
 import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.os.Parcelable;
+import android.preference.PreferenceManager;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -32,6 +34,8 @@ import com.kakao.message.template.LinkObject;
 import com.kakao.network.ErrorResult;
 import com.kakao.network.callback.ResponseCallback;
 
+import org.json.JSONArray;
+
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -42,13 +46,19 @@ import nodeal.example.you_tube_recyclerview.YoutubeGenre;
 import nodeal.example.you_tube_recyclerview.YoutubeSinger;
 
 public class GenreDetail extends Fragment {
+    public static String returnPosition;
     MainActivity activity;
-    Context context;
+    Context context = getActivity();
+
+    private static final String jjimNo = "jjimNo";
 
     String title;
     String Id;
     String thumbnail;
     ArrayList<GenreInfoList> list;
+    SharedPreferences sharedPreferences;
+    SharedPreferences.Editor editor;
+    int i = 0;
 
     private static final String TAG = "genre";
 
@@ -65,7 +75,6 @@ public class GenreDetail extends Fragment {
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-
     }
 
     @Nullable
@@ -76,7 +85,6 @@ public class GenreDetail extends Fragment {
         ViewGroup rootView = (ViewGroup) inflater.inflate(R.layout.genre, container, false);
         ListView listView = (ListView) rootView.findViewById(R.id.listViewGenre);
         try{
-
             if(getArguments() != null) {
                 list = getArguments().getParcelableArrayList("genreInfoList");
                 Log.d(TAG,list.get(0).title);
@@ -90,12 +98,9 @@ public class GenreDetail extends Fragment {
             listView.setAdapter(adapter);
 
             listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
-
-
                 @Override
                 public void onItemClick(AdapterView<?> parent, View view,
                                         int position, long id) {
-
                     Bundle bundle=new Bundle();
                     bundle.putString("Id", list.get(position).Id);
                     bundle.putParcelableArrayList("list",(ArrayList<? extends Parcelable>) list);
@@ -103,16 +108,17 @@ public class GenreDetail extends Fragment {
                     YoutubeGenre.setArguments(bundle);
 
                     ((MainActivity)getActivity()).getSupportFragmentManager().beginTransaction().replace(R.id.container, YoutubeGenre).addToBackStack(null).commit();
-
                 }
             });
+
+
         }catch(Exception e){
             System.err.println("오류 있음 "+e.getMessage()+e.getCause());
         }
 
         return rootView;
     }
-    class GenreDetailAdapter extends BaseAdapter {
+    public class GenreDetailAdapter extends BaseAdapter {
         ArrayList<GenreItem> items = new ArrayList<GenreItem>();
 
         @Override
@@ -137,7 +143,7 @@ public class GenreDetail extends Fragment {
 
         @Override
         public View getView(final int position, View convertView, ViewGroup parent) {
-            GenreDetailView view = new GenreDetailView(getContext());
+            final GenreDetailView view = new GenreDetailView(getContext());
 
             GenreItem item = items.get(position);
             view.setName(item.getName());
@@ -147,12 +153,44 @@ public class GenreDetail extends Fragment {
             ImageLoadTask task = new ImageLoadTask(imageUrl,imageView);
             task.execute();
 
+            //찜하기 버튼 클릭 시 SharedPreferences로 데이터 저장
+            //배열로 저장하게 해야 여러 개 담을 수 있음
+            //제목으로 넘길지, id로 넘길 지 생각해보기
+            final Button button = (Button) view.findViewById(R.id.button);
+            button.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    try {
+                        i += 1;
+                        //
+                        if (button.getText().equals("찜")) {
+                            ArrayList<String> jjim = new ArrayList<String>();
+                            jjim.add(list.get(position).Id);
+                            jjim.add(list.get(position).title);
+                            jjim.add(list.get(position).thumbnail);
+                            setStringArrayPref(getContext(), jjimNo + list.get(position).Id, jjim);
+                            editor.commit();
+                            button.setText("취소");
+                        } else {
+                            editor.remove("jjimNo" + list.get(position).Id);
+                            editor.commit();
+                            button.setText("찜");
+                        }
+
+                        String result = sharedPreferences.getString("id", "영상 고유값");
+                        Log.d(TAG, "id: " + result);
+
+                    } catch (Exception e) {
+                        System.err.println("오류 있음 " + e.getMessage() + e.getCause());
+                    }
+                }
+            });
+
             Button button2 = (Button) view.findViewById(R.id.button2);
             button2.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
                     try {
-
                         FeedTemplate params = FeedTemplate
                                 .newBuilder(ContentObject.newBuilder(list.get(position).title,
                                         list.get(position).thumbnail,
@@ -166,7 +204,6 @@ public class GenreDetail extends Fragment {
                         serverCallbackArgs.put("user_id", "${current_user_id}");
                         serverCallbackArgs.put("product_id", "${shared_product_id}");
 
-
                         KakaoLinkService.getInstance().sendDefault(getContext(), params, new ResponseCallback<KakaoLinkResponse>() {
                             @Override
                             public void onFailure(ErrorResult errorResult) {
@@ -176,7 +213,6 @@ public class GenreDetail extends Fragment {
                             public void onSuccess(KakaoLinkResponse result) {
                             }
                         });
-
                     } catch (Exception e) {
                         System.err.println("오류 있음 " + e.getMessage() + e.getCause());
                     }
@@ -185,12 +221,26 @@ public class GenreDetail extends Fragment {
 
             return view;
         }
-
         private void getApplicationContext() {
+        }
+
+        private void setStringArrayPref(Context context, String key, ArrayList<String> values) {
+            SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(context);
+            SharedPreferences.Editor editor = prefs.edit();
+            JSONArray a = new JSONArray();
+            for (int i = 0; i < values.size(); i++) {
+                a.put(values.get(i));
+            }
+            if (!values.isEmpty()) {
+                editor.putString(key, a.toString());
+            } else {
+                editor.putString(key, null);
+            }
+            editor.apply();
         }
     }
 
-    private class ImageLoadTask extends AsyncTask<Void,Void, Bitmap> {
+    public static class ImageLoadTask extends AsyncTask<Void,Void, Bitmap> {
 
         private String urlStr;
         private ImageView imageView;
@@ -221,7 +271,6 @@ public class GenreDetail extends Fragment {
                 bitmap = BitmapFactory.decodeStream(url.openConnection().getInputStream());
 
                 bitmapHash.put(urlStr,bitmap);
-
             } catch (Exception e) {
                 e.printStackTrace();
             }
