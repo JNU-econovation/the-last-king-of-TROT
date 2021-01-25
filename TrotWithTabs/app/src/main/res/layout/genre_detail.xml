@@ -29,7 +29,7 @@
             android:layout_marginTop="15dp"
             android:layout_weight="4"
             android:gravity="center"
-            android:text="가수명"
+            android:text="노래명"
             android:textSize="20dp" />
 
         <Button

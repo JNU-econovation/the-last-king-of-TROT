@@ -53,6 +53,7 @@ public class SingerDetail extends Fragment {
     String title;
     String Id;
     String thumbnail;
+
     
     private View header;
 
