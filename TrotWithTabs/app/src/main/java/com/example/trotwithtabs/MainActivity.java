@@ -12,6 +12,7 @@ import android.content.Context;
 import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager;
 import android.content.pm.Signature;
+import android.database.sqlite.SQLiteDatabase;
 import android.os.AsyncTask;
 import android.os.Build;
 import android.os.Bundle;
@@ -25,6 +26,7 @@ import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.BaseAdapter;
 import android.widget.ListView;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import com.google.android.material.tabs.TabLayout;
@@ -61,9 +63,22 @@ public class MainActivity extends AppCompatActivity {
 
     Bundle mBundle;  //main bundle
 
+    DBOpenHelper helper;
+    SQLiteDatabase db;
+
+    MainActivity activity;
+    Context context;
+
+    private static final String TAG = "singer";
+
+    private String API_KEY = "AIzaSyDylwdVhqCdkf0xtuHMdTqdGjNqMs2uTbI";
+    private String result;
+
+    ArrayList<SingerInfoList> singerInfoList;
+    ArrayList<SingerInfoList> singerInfoList2 = new ArrayList<>();
+
     private long backKeyPressedTime = 0;
     private Toast toast;
-
 
     @RequiresApi(api = Build.VERSION_CODES.LOLLIPOP)
     @Override
@@ -75,9 +90,11 @@ public class MainActivity extends AppCompatActivity {
         String keyHash = com.kakao.util.helper.Utility.getKeyHash(this /* context */);
         Log.d(TAG,keyHash);
 
+        helper = new DBOpenHelper(this);
+        db = helper.getWritableDatabase();
+
        Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
-
 
         fragment0 = new Home();
         fragment1 = new Genre();
@@ -120,39 +137,24 @@ public class MainActivity extends AppCompatActivity {
                     selected = fragment5;
                     getSupportFragmentManager().beginTransaction().replace(R.id.container, selected).commit();
                 }
-
-
-
             }
-
             @Override
             public void onTabUnselected(TabLayout.Tab tab) {
-
             }
 
             @Override
             public void onTabReselected(TabLayout.Tab tab) {
-
             }
         });
+    }
+
+    public void clickHandler(View view) {
 
     }
 
     public void fragBtnClick(Bundle bundle) {
         this.mBundle = bundle;
     } //fragBtnClcick()
-
-    MainActivity activity;
-    Context context;
-
-    private static final String TAG = "singer";
-
-    private String API_KEY = "AIzaSyA7bO2_1TlpoAQZFDuUd6jykS82p2CoZiA";
-    private String result;
-
-    ArrayList<SingerInfoList> singerInfoList;
-    ArrayList<SingerInfoList> singerInfoList2 = new ArrayList<>();
-
 
     private class YoutubeAsyncTask extends AsyncTask<Void, Void, Void> {
         @Override
@@ -235,9 +237,7 @@ public class MainActivity extends AppCompatActivity {
                     singerInfoList2.add(new SingerInfoList(singleVideo.getSnippet().getTitle(),rId.getVideoId(),thumbnail.getUrl()));
                     Log.d(TAG,"하긴 함");
                 }
-
             }
-
             result = sb.toString();
         }
     }

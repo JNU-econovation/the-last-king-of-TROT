@@ -28,7 +28,7 @@
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_weight="1"
-            android:text="찜하기"
+            android:text="찜"
             android:layout_marginTop="7dp"/>
 
 

@@ -7,6 +7,7 @@ import androidx.recyclerview.widget.DefaultItemAnimator;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import android.database.sqlite.SQLiteDatabase;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.os.AsyncTask;
@@ -21,12 +22,14 @@ import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.ListView;
 
+import com.example.trotwithtabs.DBOpenHelper;
 import com.example.trotwithtabs.GenreDetailView;
 import com.example.trotwithtabs.GenreInfoList;
 import com.example.trotwithtabs.GenreItem;
 import com.example.trotwithtabs.R;
 import com.example.trotwithtabs.SingerDetail;
 import com.example.trotwithtabs.SingerInfoList;
+import com.example.trotwithtabs.SongJjimList;
 import com.kakao.kakaolink.v2.KakaoLinkResponse;
 import com.kakao.kakaolink.v2.KakaoLinkService;
 import com.kakao.message.template.ContentObject;
@@ -50,9 +53,14 @@ public class YoutubeGenre extends Fragment {
     private static final String TAG = "YoutubeID";
     String genreId;
     ArrayList<GenreInfoList> list;
+    ArrayList<SongJjimList> songJjimList;
     ViewGroup rootView;
     ListView listView;
     int firstPosition;
+
+    DBOpenHelper helper;
+    SQLiteDatabase db;
+    int i = 0;
 
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
@@ -67,6 +75,9 @@ public class YoutubeGenre extends Fragment {
         rootView = (ViewGroup) inflater.inflate(R.layout.youtube_genre, container, false);
         listView = (ListView) rootView.findViewById(R.id.listViewGenreYoutube);
         try {
+            helper = new DBOpenHelper(this.getContext());
+            db = helper.getWritableDatabase();
+
             if (getArguments() != null) {
                 genreId = getArguments().getString("Id");
                 list = getArguments().getParcelableArrayList("list");
@@ -153,6 +164,37 @@ public class YoutubeGenre extends Fragment {
             String imageUrl = list.get(position).thumbnail;
             ImageLoadTask task = new ImageLoadTask(imageUrl,imageView);
             task.execute();
+
+            final Button button = (Button) view.findViewById(R.id.button);
+
+            songJjimList = helper.selectSongJjim();
+            for (int i = 0; i < list.size(); i++) {
+                for (int j = 0; j < songJjimList.size(); j++) {
+                    if (songJjimList.get(j).Id == list.get(i).Id) {
+                        button.setText("취소");
+                    } else {
+                        button.setText("찜");
+                    }
+                }
+            }
+
+            button.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    try {
+                        i += 1;
+                        if (button.getText().equals("찜")) {
+                            helper.insertSongJjim(list.get(position).Id, list.get(position).title, list.get(position).thumbnail);
+                            Log.d("DB", "노래 찜 추가됨");
+                            button.setText("취소");
+                        } else {
+                            button.setText("찜");
+                        }
+                    } catch (Exception e) {
+                        System.err.println("오류 있음 " + e.getMessage() + e.getCause());
+                    }
+                }
+            });
 
             Button button2 = (Button) view.findViewById(R.id.button2);
             button2.setOnClickListener(new View.OnClickListener() {

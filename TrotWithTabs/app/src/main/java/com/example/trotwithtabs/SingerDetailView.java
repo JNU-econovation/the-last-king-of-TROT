@@ -46,11 +46,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-/*
-import com.kakao.kakaolink.*;
-import com.kakao.KakaoParameterException;
-import com.kakao.KakaoTalkLinkMessageBuilder;*/
-
 public class SingerDetailView extends LinearLayout {
     TextView textView;
     String title;

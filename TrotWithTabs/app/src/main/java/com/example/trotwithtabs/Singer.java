@@ -2,6 +2,7 @@ package com.example.trotwithtabs;
 
 import android.content.Context;
 import android.content.Intent;
+import android.database.sqlite.SQLiteDatabase;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.os.Parcelable;
@@ -11,6 +12,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.BaseAdapter;
+import android.widget.Button;
 import android.widget.ListView;
 
 import androidx.annotation.NonNull;
@@ -40,15 +42,21 @@ public class Singer extends Fragment {
     MainActivity activity;
     Context context;
 
+    DBOpenHelper helper;
+    SQLiteDatabase db;
+
     private static final String TAG = "singer";
 
-    private String API_KEY = "AIzaSyA7bO2_1TlpoAQZFDuUd6jykS82p2CoZiA";
+    private String API_KEY = "AIzaSyDylwdVhqCdkf0xtuHMdTqdGjNqMs2uTbI";
     private String result;
     int singerPosition;
     String[] list_singer = {"임영웅","정동원","이찬원","영탁","김호중","장민호","김희재","조명섭","송가인","나훈아","장윤정"};
     ArrayList<SingerInfoList> singerInfoList;
     ArrayList<SingerInfoList> singerInfoList2;
     String singerName;
+
+    ArrayList<SingerJjimList> singerJjimList;
+    int i = 0;
 
 
     public void onAttach(@NonNull Context context) {
@@ -72,23 +80,17 @@ public class Singer extends Fragment {
         ListView listView = (ListView) rootView.findViewById(R.id.listViewSinger);
 
         SingerAdapter adapter = new SingerAdapter();
-        adapter.addItem(new SingerItem("임영웅"));
-        adapter.addItem(new SingerItem("정동원"));
-        adapter.addItem(new SingerItem("이찬원"));
-        adapter.addItem(new SingerItem("영탁"));
-        adapter.addItem(new SingerItem("김호중"));
-        adapter.addItem(new SingerItem("장민호"));
-        adapter.addItem(new SingerItem("김희재"));
-        adapter.addItem(new SingerItem("조명섭"));
-        adapter.addItem(new SingerItem("송가인"));
-        adapter.addItem(new SingerItem("나훈아"));
-        adapter.addItem(new SingerItem("장윤정"));
+
+        helper = new DBOpenHelper(this.getContext());
+        db = helper.getWritableDatabase();
+
+        for (int i = 0; i < list_singer.length; i++) {
+            adapter.addItem(new SingerItem(list_singer[i]));
+        }
 
         listView.setAdapter(adapter);
 
         listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
-
-
             @Override
             public void onItemClick(AdapterView<?> parent, View view,
                                     int position, long id) {
@@ -96,7 +98,6 @@ public class Singer extends Fragment {
                 YoutubeAsyncTask youtubeAsyncTask = new YoutubeAsyncTask();
                 youtubeAsyncTask.execute();
                 Log.d(TAG,list_singer[singerPosition]);
-
             }
         });
 
@@ -132,7 +133,6 @@ public class Singer extends Fragment {
 
                 singerName=list_singer[singerPosition];
                 search.setQ(singerName);
-                // search.setChannelId("UCk9GmdlDTBfgGRb7vXeRMoQ"); //레드벨벳 공식 유투브 채널
                 search.setOrder("relevance"); //date relevance
 
                 search.setType("video");
@@ -163,7 +163,7 @@ public class Singer extends Fragment {
         protected void onPostExecute(Void aVoid) {
             super.onPostExecute(aVoid);
             Fragment singerDetailFragment = new SingerDetail();
-            singerInfoList=singerInfoList2;
+            singerInfoList = singerInfoList2;
 
             Bundle bundle=new Bundle();
             bundle.putParcelableArrayList("singerInfoList",(ArrayList<? extends Parcelable>) singerInfoList);
@@ -186,9 +186,7 @@ public class Singer extends Fragment {
                 SearchResult singleVideo = iteratorSearchResults.next();
                 ResourceId rId = singleVideo.getId();
 
-                // Double checks the kind is video.
                 if (rId.getKind().equals("youtube#video")) {
-
                     Thumbnail thumbnail = (Thumbnail) singleVideo.getSnippet().getThumbnails().get("default");
                     singerInfoList2.add(new SingerInfoList(singleVideo.getSnippet().getTitle(),rId.getVideoId(),thumbnail.getUrl()));
                     Log.d(TAG,singerInfoList2.get(0).title);
@@ -224,11 +222,32 @@ public class Singer extends Fragment {
         }
 
         @Override
-        public View getView(int position, View convertView, ViewGroup parent) {
+        public View getView(final int position, View convertView, ViewGroup parent) {
             SingerItemView view = new SingerItemView(getContext());
+            final Button button = (Button) view.findViewById(R.id.button);
+            singerJjimList = helper.selectSingerJjim();
+            button.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    try {
+                        i += 1;
+                        if (button.getText().equals("찜")) {
+                            helper.insertSingerJjim(list_singer[position]);
+                            Log.d("DB", "노래 찜 추가됨");
+                            button.setText("취소");
+                        } else {
+                            button.setText("찜");
+                            helper.deleteSingerJjim(list_singer[position]);
+                        }
+                    } catch (Exception e) {
+                        System.err.println("오류 있음 " + e.getMessage() + e.getCause());
+                    }
+                }
+            });
 
             SingerItem item = items.get(position);
             view.setName(item.getName());
+
             return view;
         }
 
