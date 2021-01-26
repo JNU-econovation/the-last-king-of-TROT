@@ -47,7 +47,7 @@ public class Singer extends Fragment {
 
     private static final String TAG = "singer";
 
-    private String API_KEY = "AIzaSyDylwdVhqCdkf0xtuHMdTqdGjNqMs2uTbI";
+    private String API_KEY = "AIzaSyDfc22EX6l8gpLQNEV_6EPRG-5Z2N4Lod8";
     private String result;
     int singerPosition;
     String[] list_singer = {"임영웅","정동원","이찬원","영탁","김호중","장민호","김희재","조명섭","송가인","나훈아","장윤정"};

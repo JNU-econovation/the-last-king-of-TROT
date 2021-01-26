@@ -33,14 +33,7 @@ public class DBOpenHelper extends SQLiteOpenHelper {
                 "videoId TEXT," +
                 "title TEXT," +
                 "thumbnail TEXT," +
-                "state TEXT)");
-
-        /*db.execSQL("CREATE TABLE " + DB_TABLE_SONG + "(" +
-                "number INTEGER PRIMARY KEY AUTOINCREMENT," +
-                "videoId TEXT," +
-                "title TEXT," +
-                "thumbnail TEXT," +
-                "state INTEGER)");*/
+                "state INTEGER)");
 
         Log.d("songJjim ","노래 찜 테이블 생성");
 
@@ -61,7 +54,7 @@ public class DBOpenHelper extends SQLiteOpenHelper {
         // 읽고 쓰기가 가능하게 DB 열기
         SQLiteDatabase db = getWritableDatabase();
         // DB에 입력한 값으로 행 추가
-        db.execSQL( "INSERT INTO " + DB_TABLE_SONG + "(videoId, title, thumbnail,state)" + "values" + "(" + "'" + id + "'" + ",'" + title + "'" + ",'" + thumbnail + "'" + "," + "취소" + ");");
+        db.execSQL( "INSERT INTO " + DB_TABLE_SONG + "(videoId, title, thumbnail,state)" + "values" + "(" + "'" + id + "'" + ",'" + title + "'" + ",'" + thumbnail + "'" + "," + 1 + ");");
         db.close();
     }
 
@@ -77,6 +70,7 @@ public class DBOpenHelper extends SQLiteOpenHelper {
         SQLiteDatabase db = getWritableDatabase();
         Cursor cursor = db.rawQuery("select * from " + DB_TABLE_SONG, null);
         ArrayList<SongJjimList> list = new ArrayList<>();
+        cursor.moveToFirst();
         if (cursor.moveToFirst()) {
             do {
                 list.add(new SongJjimList(cursor.getString(1), cursor.getString(2), cursor.getString(3), cursor.getInt(4)));
@@ -84,6 +78,33 @@ public class DBOpenHelper extends SQLiteOpenHelper {
         }
         cursor.close();
         return list;
+    }
+
+    public boolean checkSongJjim(String videoId, String title, String thumbnail) {
+
+        SQLiteDatabase db = getWritableDatabase();
+        String[] tokens = {videoId, title, thumbnail};
+
+        String sql = "select * from songJjim ";
+        sql +=" where videoId = ? and title = ? and thumbnail = ? ";
+
+        Cursor result;
+
+        result = db.rawQuery(sql, tokens);
+
+        int count = result.getCount();
+
+        db.close();
+
+        if(count==0) {
+            return false;
+        }
+        else if(count==1) {
+            return true;
+        }
+        else {
+            return false;
+        }
     }
 
     public ArrayList<SingerJjimList> selectSingerJjim() {

@@ -69,7 +69,7 @@ public class Jjim extends Fragment {
     ListView listView;
     String singerName;
 
-    private String API_KEY = "AIzaSyDylwdVhqCdkf0xtuHMdTqdGjNqMs2uTbI";
+    private String API_KEY = "AIzaSyAW-uOhuPKkWPW-WCkxt6g6fglqj72jpF0";
 
     DBOpenHelper helper;
     SQLiteDatabase db;
