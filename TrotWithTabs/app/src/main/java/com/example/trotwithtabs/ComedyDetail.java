@@ -3,6 +3,7 @@ package com.example.trotwithtabs;
 import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
+import android.database.sqlite.SQLiteDatabase;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.os.AsyncTask;
@@ -44,10 +45,15 @@ public class ComedyDetail extends Fragment {
     MainActivity activity;
     Context context;
 
+    DBOpenHelper helper;
+    SQLiteDatabase db;
+
     String title;
     String Id;
     String thumbnail;
     ArrayList<SingerInfoList> list;
+    ArrayList<SongJjimList> songJjimList;
+    int i = 0;
 
     private static final String TAG = "comedy";
 
@@ -75,6 +81,8 @@ public class ComedyDetail extends Fragment {
         ViewGroup rootView = (ViewGroup) inflater.inflate(R.layout.singer, container, false);
         ListView listView = (ListView) rootView.findViewById(R.id.listViewSinger);
         try{
+            helper = new DBOpenHelper(this.getContext());
+            db = helper.getWritableDatabase();
 
             if(getArguments() != null) {
                 list = getArguments().getParcelableArrayList("singerInfoList");
@@ -145,6 +153,37 @@ public class ComedyDetail extends Fragment {
             String imageUrl = list.get(position).thumbnail;
             ImageLoadTask task = new ImageLoadTask(imageUrl, imageView);
             task.execute();
+
+            final Button button = (Button) view.findViewById(R.id.button);
+
+            songJjimList = helper.selectSongJjim();
+            for (int i = 0; i < list.size(); i++) {
+                for (int j = 0; j < songJjimList.size(); j++) {
+                    if (songJjimList.get(j).Id == list.get(i).Id) {
+                        button.setText("취소");
+                    } else {
+                        button.setText("찜");
+                    }
+                }
+            }
+
+            button.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    try {
+                        i += 1;
+                        if (button.getText().equals("찜")) {
+                            helper.insertSongJjim(list.get(position).Id, list.get(position).title, list.get(position).thumbnail);
+                            Log.d("DB", "노래 찜 추가됨");
+                            button.setText("취소");
+                        } else {
+                            button.setText("찜");
+                        }
+                    } catch (Exception e) {
+                        System.err.println("오류 있음 " + e.getMessage() + e.getCause());
+                    }
+                }
+            });
 
             Button button2 = (Button) view.findViewById(R.id.button2);
             button2.setOnClickListener(new View.OnClickListener() {

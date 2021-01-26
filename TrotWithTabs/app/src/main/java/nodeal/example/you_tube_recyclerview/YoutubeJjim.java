@@ -1,14 +1,10 @@
-package com.example.trotwithtabs;
+package nodeal.example.you_tube_recyclerview;
 
-import android.content.Context;
-import android.content.SharedPreferences;
 import android.database.sqlite.SQLiteDatabase;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.os.AsyncTask;
 import android.os.Bundle;
-import android.os.Parcelable;
-import android.preference.PreferenceManager;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -22,7 +18,17 @@ import android.widget.ListView;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
+import androidx.recyclerview.widget.DefaultItemAnimator;
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
 
+import com.example.trotwithtabs.DBOpenHelper;
+import com.example.trotwithtabs.GenreDetailView;
+import com.example.trotwithtabs.GenreInfoList;
+import com.example.trotwithtabs.GenreItem;
+import com.example.trotwithtabs.R;
+import com.example.trotwithtabs.SingerJjimList;
+import com.example.trotwithtabs.SongJjimList;
 import com.kakao.kakaolink.v2.KakaoLinkResponse;
 import com.kakao.kakaolink.v2.KakaoLinkService;
 import com.kakao.message.template.ContentObject;
@@ -31,86 +37,99 @@ import com.kakao.message.template.LinkObject;
 import com.kakao.network.ErrorResult;
 import com.kakao.network.callback.ResponseCallback;
 
-import org.json.JSONArray;
-
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
-import nodeal.example.you_tube_recyclerview.YoutubeGenre;
+import nodeal.example.you_tube_recyclerview.ui.YoutubeAdapter;
+import nodeal.example.you_tube_recyclerview.ui.YoutubeContent;
 
-public class GenreDetail extends Fragment {
-    MainActivity activity;
-    Context context = getActivity();
+
+public class YoutubeJjim extends Fragment {
+
+    private static final String TAG = "YoutubeID";
+    String genreId;
+    ArrayList<SongJjimList> list;
+    ArrayList<SongJjimList> songJjimList;
+    ViewGroup rootView;
+    ListView listView;
+    int firstPosition;
+    int i = 0;
 
     DBOpenHelper helper;
     SQLiteDatabase db;
 
-    ArrayList<GenreInfoList> list;
-
-    private static final String TAG = "genre";
-
-    Fragment YoutubeGenre = new YoutubeGenre();
-
-    public void onAttach(@NonNull Context context) {
-        super.onAttach(context);
-        this.context = context;
-
-        //메시지 송수신에 필요한 객체 초기화
-        activity = (MainActivity) getActivity();
-    }
-
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+
     }
 
     @Nullable
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
-        //XML, java 연결
-        //XML이 메인에 직접 붙으면 true, 프래그먼트에 붙으면 false
-        ViewGroup rootView = (ViewGroup) inflater.inflate(R.layout.genre, container, false);
-        ListView listView = (ListView) rootView.findViewById(R.id.listViewGenre);
-        try{
+
+        rootView = (ViewGroup) inflater.inflate(R.layout.youtube_genre, container, false);
+        listView = (ListView) rootView.findViewById(R.id.listViewGenreYoutube);
+        try {
             helper = new DBOpenHelper(this.getContext());
             db = helper.getWritableDatabase();
 
-            if(getArguments() != null) {
-                list = getArguments().getParcelableArrayList("genreInfoList");
-                Log.d(TAG,list.get(0).title);
+            if (getArguments() != null) {
+                genreId = getArguments().getString("Id");
+                list = getArguments().getParcelableArrayList("list");
+                firstPosition = getArguments().getInt("firstPosition");
+                Log.d(TAG, genreId);
             }
+            List<YoutubeContent> contents = new ArrayList<>();
+            contents.add(new YoutubeContent(genreId));
+
+            RecyclerView recyclerView = rootView.findViewById(R.id.main_recycler_view2);
+            recyclerView.setLayoutManager(new LinearLayoutManager(getContext()));
+            recyclerView.setItemAnimator(new DefaultItemAnimator());
+            recyclerView.setAdapter(new YoutubeAdapter(contents));
 
             GenreDetailAdapter adapter = new GenreDetailAdapter();
 
-            for (int i = 0; i < 15; i++) {
+            for (int i = 0; i < list.size(); i++) {
                 adapter.addItem(new GenreItem(list.get(i).title));
             }
+
             listView.setAdapter(adapter);
-
-            listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+            listView.post(new Runnable() {
                 @Override
-                public void onItemClick(AdapterView<?> parent, View view,
-                                        int position, long id) {
-                    Bundle bundle=new Bundle();
-                    bundle.putString("Id", list.get(position).Id);
-                    bundle.putParcelableArrayList("list",(ArrayList<? extends Parcelable>) list);
-                    bundle.putInt("firstPosition",position);
-                    YoutubeGenre.setArguments(bundle);
-
-                    ((MainActivity)getActivity()).getSupportFragmentManager().beginTransaction().replace(R.id.container, YoutubeGenre).addToBackStack(null).commit();
+                public void run() {
+                    if (null != listView) {
+                        listView.clearFocus();
+                        listView.requestFocusFromTouch();
+                        listView.setSelection(firstPosition);
+                    }
                 }
             });
 
+            listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+                @Override
+                public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+                    listView.setSelection(position);
 
-        }catch(Exception e){
-            System.err.println("오류 있음 "+e.getMessage()+e.getCause());
+                    List<YoutubeContent> contents2 = new ArrayList<>();
+                    contents2.add(new YoutubeContent(list.get(position).Id));
+
+                    RecyclerView recyclerView = rootView.findViewById(R.id.main_recycler_view2);
+                    recyclerView.setLayoutManager(new LinearLayoutManager(getContext()));
+                    recyclerView.setItemAnimator(new DefaultItemAnimator());
+                    recyclerView.setAdapter(new YoutubeAdapter(contents2));
+                }
+            });
+        } catch (Exception e) {
+            System.err.println("오류 있음 " + e.getMessage() + e.getCause());
         }
-
         return rootView;
     }
-    public class GenreDetailAdapter extends BaseAdapter {
+
+    class GenreDetailAdapter extends BaseAdapter {
         ArrayList<GenreItem> items = new ArrayList<GenreItem>();
 
         @Override
@@ -118,7 +137,7 @@ public class GenreDetail extends Fragment {
             return items.size();
         }
 
-        public void addItem(GenreItem item){
+        public void addItem(GenreItem item) {
             items.add(item);
             this.notifyDataSetChanged();
         }
@@ -135,7 +154,7 @@ public class GenreDetail extends Fragment {
 
         @Override
         public View getView(final int position, View convertView, ViewGroup parent) {
-            final GenreDetailView view = new GenreDetailView(getContext());
+            GenreDetailView view = new GenreDetailView(getContext());
 
             GenreItem item = items.get(position);
             view.setName(item.getName());
@@ -147,35 +166,29 @@ public class GenreDetail extends Fragment {
 
             final Button button = (Button) view.findViewById(R.id.button);
 
-
-
-            //Log.d("DB", String.valueOf(helper.selectSongJjimState(list.get(position).Id)));
-/*
-
-            if (helper.selectSongJjimState(list.get(position).Id) == 1) {
-                button.setText("취소");
-            } else {
-                button.setText("찜");
+            songJjimList = helper.selectSongJjim();
+            for (int i = 0; i < list.size(); i++) {
+                for (int j = 0; j < songJjimList.size(); j++) {
+                    if (songJjimList.get(j).Id == list.get(i).Id) {
+                        button.setText("취소");
+                    } else {
+                        button.setText("찜");
+                    }
+                }
             }
-
- */
 
             button.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
                     try {
+                        i += 1;
                         if (button.getText().equals("찜")) {
                             helper.insertSongJjim(list.get(position).Id, list.get(position).title, list.get(position).thumbnail);
                             Log.d("DB", "노래 찜 추가됨");
                             button.setText("취소");
-                            helper.changeSongJjimState(list.get(position).Id, 1);
                         } else {
                             button.setText("찜");
-                            helper.deleteSongJjim(list.get(position).Id);
-                            helper.changeSongJjimState(list.get(position).Id, 0);
                         }
-
-
                     } catch (Exception e) {
                         System.err.println("오류 있음 " + e.getMessage() + e.getCause());
                     }
@@ -187,6 +200,7 @@ public class GenreDetail extends Fragment {
                 @Override
                 public void onClick(View v) {
                     try {
+
                         FeedTemplate params = FeedTemplate
                                 .newBuilder(ContentObject.newBuilder(list.get(position).title,
                                         list.get(position).thumbnail,
@@ -200,6 +214,7 @@ public class GenreDetail extends Fragment {
                         serverCallbackArgs.put("user_id", "${current_user_id}");
                         serverCallbackArgs.put("product_id", "${shared_product_id}");
 
+
                         KakaoLinkService.getInstance().sendDefault(getContext(), params, new ResponseCallback<KakaoLinkResponse>() {
                             @Override
                             public void onFailure(ErrorResult errorResult) {
@@ -209,6 +224,7 @@ public class GenreDetail extends Fragment {
                             public void onSuccess(KakaoLinkResponse result) {
                             }
                         });
+
                     } catch (Exception e) {
                         System.err.println("오류 있음 " + e.getMessage() + e.getCause());
                     }
@@ -217,29 +233,8 @@ public class GenreDetail extends Fragment {
 
             return view;
         }
-        private void getApplicationContext() {
-        }
-
-        private void setStringArrayPref(Context context, String key, ArrayList<String> values) {
-            SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(context);
-            SharedPreferences.Editor editor = prefs.edit();
-            JSONArray a = new JSONArray();
-            for (int i = 0; i < values.size(); i++) {
-                a.put(values.get(i));
-            }
-            if (!values.isEmpty()) {
-                editor.putString(key, a.toString());
-            } else {
-                editor.putString(key, null);
-            }
-            editor.apply();
-        }
     }
-
-
-
-
-    public static class ImageLoadTask extends AsyncTask<Void,Void, Bitmap> {
+    private class ImageLoadTask extends AsyncTask<Void,Void, Bitmap> {
 
         private String urlStr;
         private ImageView imageView;
@@ -270,6 +265,7 @@ public class GenreDetail extends Fragment {
                 bitmap = BitmapFactory.decodeStream(url.openConnection().getInputStream());
 
                 bitmapHash.put(urlStr,bitmap);
+
             } catch (Exception e) {
                 e.printStackTrace();
             }

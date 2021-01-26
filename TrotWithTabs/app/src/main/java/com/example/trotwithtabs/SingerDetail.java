@@ -4,6 +4,7 @@ import android.app.Activity;
 import android.app.Application;
 import android.content.Context;
 import android.content.Intent;
+import android.database.sqlite.SQLiteDatabase;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.os.AsyncTask;
@@ -48,11 +49,15 @@ public class SingerDetail extends Fragment {
     MainActivity activity;
     Context context;
     ArrayList<SingerInfoList> list;
+    ArrayList<SingerJjimList> singerJjimList;
     private static final String TAG = "singerDetail";
     Fragment YoutubeSinger = new YoutubeSinger();
+    DBOpenHelper helper;
+    SQLiteDatabase db;
     String title;
     String Id;
     String thumbnail;
+    int i = 0;
 
     
     private View header;
@@ -79,6 +84,8 @@ public class SingerDetail extends Fragment {
         final ListView listView = (ListView) rootView.findViewById(R.id.listViewSinger);
 
         try {
+            helper = new DBOpenHelper(this.getContext());
+            db = helper.getWritableDatabase();
 
             if (getArguments() != null) {
                 list = getArguments().getParcelableArrayList("singerInfoList");
@@ -136,6 +143,7 @@ public class SingerDetail extends Fragment {
 
         public void addItem(SingerItem item) {
             items.add(item);
+            this.notifyDataSetChanged();
         }
 
         @Override
@@ -159,6 +167,29 @@ public class SingerDetail extends Fragment {
             String imageUrl = list.get(position).thumbnail;
             ImageLoadTask task = new ImageLoadTask(imageUrl,imageView);
             task.execute();
+
+            final Button button = (Button) view.findViewById(R.id.button);
+
+            singerJjimList = helper.selectSingerJjim();
+
+            button.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    try {
+                        i += 1;
+                        if (button.getText().equals("찜")) {
+                            helper.insertSongJjim(list.get(position).Id, list.get(position).title, list.get(position).thumbnail);
+                            Log.d("DB", "노래 찜 추가됨");
+                            button.setText("취소");
+                        } else {
+                            button.setText("찜");
+                            helper.deleteSingerJjim(list.get(position).title);
+                        }
+                    } catch (Exception e) {
+                        System.err.println("오류 있음 " + e.getMessage() + e.getCause());
+                    }
+                }
+            });
 
             Button button2 = (Button) view.findViewById(R.id.button2);
             button2.setOnClickListener(new View.OnClickListener() {

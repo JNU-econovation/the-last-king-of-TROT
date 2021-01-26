@@ -42,7 +42,7 @@ public class Genre extends Fragment {
 
     private static final String TAG = "genre";
 
-    private String API_KEY = "AIzaSyA7bO2_1TlpoAQZFDuUd6jykS82p2CoZiA";
+    private String API_KEY = "AIzaSyDylwdVhqCdkf0xtuHMdTqdGjNqMs2uTbI";
     private String result;
     int genrePosition;
     String[] list_genre = {"트로트 메들리","댄스트로트","전설의 트로트","최신 트로트","보이스트롯","미스트롯 송가인","미스터트롯","7080 메들리","7080 인기가수","강변가요제","대학가요제"};
