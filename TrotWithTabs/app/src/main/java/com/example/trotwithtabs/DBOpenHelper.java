@@ -27,12 +27,20 @@ public class DBOpenHelper extends SQLiteOpenHelper {
     // state = 0이면 찜 X, 1이면 찜 O
     @Override
     public void onCreate(SQLiteDatabase db) {
+
         db.execSQL("CREATE TABLE " + DB_TABLE_SONG + "(" +
                 "number INTEGER PRIMARY KEY AUTOINCREMENT," +
                 "videoId TEXT," +
                 "title TEXT," +
                 "thumbnail TEXT," +
-                "state INTEGER)");
+                "state TEXT)");
+
+        /*db.execSQL("CREATE TABLE " + DB_TABLE_SONG + "(" +
+                "number INTEGER PRIMARY KEY AUTOINCREMENT," +
+                "videoId TEXT," +
+                "title TEXT," +
+                "thumbnail TEXT," +
+                "state INTEGER)");*/
 
         Log.d("songJjim ","노래 찜 테이블 생성");
 
@@ -53,7 +61,7 @@ public class DBOpenHelper extends SQLiteOpenHelper {
         // 읽고 쓰기가 가능하게 DB 열기
         SQLiteDatabase db = getWritableDatabase();
         // DB에 입력한 값으로 행 추가
-        db.execSQL( "INSERT INTO " + DB_TABLE_SONG + "(videoId, title, thumbnail,state)" + "values" + "(" + "'" + id + "'" + ",'" + title + "'" + ",'" + thumbnail + "'" + "," + 0 + ");");
+        db.execSQL( "INSERT INTO " + DB_TABLE_SONG + "(videoId, title, thumbnail,state)" + "values" + "(" + "'" + id + "'" + ",'" + title + "'" + ",'" + thumbnail + "'" + "," + "취소" + ");");
         db.close();
     }
 
@@ -92,24 +100,48 @@ public class DBOpenHelper extends SQLiteOpenHelper {
         return list;
     }
 
-    public int selectSongJjimState(String id) {
+    public String selectSongJjimState(String videoId) {
         SQLiteDatabase db = getWritableDatabase();
-        int state = 0;
-        Cursor cursor = db.rawQuery("SELECT state from " + DB_TABLE_SONG, null);
+        String state = "";
+        Cursor cursor = db.rawQuery("SELECT * FROM " + DB_TABLE_SONG + " WHERE videoId = '" + videoId + "';", null);
         if (cursor.moveToFirst()) {
             do {
-                state = cursor.getInt(4);
+                state = cursor.getString(4);
             } while (cursor.moveToNext());
         }
         cursor.close();
         return state;
     }
 
-    public void changeSongJjimState(String id, int state) {
+    /*
+    public int selectSongJjimState(String id) {
+        SQLiteDatabase db = getWritableDatabase();
+        int state = 0;
+        ArrayList<Integer> list = new ArrayList<>();
+        Cursor cursor = db.rawQuery("SELECT state from " + DB_TABLE_SONG, null);
+        if (cursor.moveToFirst()) {
+            do {
+                list.add(cursor.getInt(4));
+            } while (cursor.moveToNext());
+        }
+        cursor.close();
+        return state;
+    }
+     */
+
+    public void IsSongJjimState(String id) {
+        SQLiteDatabase db = getWritableDatabase();
+        db.execSQL("UPDATE " + DB_TABLE_SONG + " set state = " + "찜" + " WHERE videoId = '" + id + "';");
+        db.close();
+    }
+
+    /*public void changeSongJjimState(String id, int state) {
         SQLiteDatabase db = getWritableDatabase();
         db.execSQL("UPDATE " + DB_TABLE_SONG + " set state = " + state + " WHERE videoId = '" + id + "';");
         db.close();
     }
+
+     */
 
     public void deleteSongJjim(String id) {
         SQLiteDatabase db = getWritableDatabase();

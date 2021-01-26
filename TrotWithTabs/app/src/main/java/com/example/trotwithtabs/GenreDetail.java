@@ -149,7 +149,7 @@ public class GenreDetail extends Fragment {
 
 
 
-            //Log.d("DB", String.valueOf(helper.selectSongJjimState(list.get(position).Id)));
+            //Log.d("DB", String.valueOf(helper.selectSongJjimState()));
 /*
 
             if (helper.selectSongJjimState(list.get(position).Id) == 1) {
@@ -167,12 +167,13 @@ public class GenreDetail extends Fragment {
                         if (button.getText().equals("찜")) {
                             helper.insertSongJjim(list.get(position).Id, list.get(position).title, list.get(position).thumbnail);
                             Log.d("DB", "노래 찜 추가됨");
-                            button.setText("취소");
-                            helper.changeSongJjimState(list.get(position).Id, 1);
+                            //button.setText(String.valueOf(helper.selectSongJjimState()));
+                            //button.setText("취소");
+                            //helper.changeSongJjimState(list.get(position).Id, 1);
                         } else {
                             button.setText("찜");
                             helper.deleteSongJjim(list.get(position).Id);
-                            helper.changeSongJjimState(list.get(position).Id, 0);
+                            //helper.changeSongJjimState(list.get(position).Id, 0);
                         }
 
 
