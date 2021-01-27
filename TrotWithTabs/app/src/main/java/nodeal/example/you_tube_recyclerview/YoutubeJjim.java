@@ -1,5 +1,6 @@
 package nodeal.example.you_tube_recyclerview;
 
+import android.content.Context;
 import android.database.sqlite.SQLiteDatabase;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
@@ -12,8 +13,10 @@ import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.BaseAdapter;
 import android.widget.Button;
+import android.widget.CheckBox;
 import android.widget.ImageView;
 import android.widget.ListView;
+import android.widget.TextView;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -60,6 +63,7 @@ public class YoutubeJjim extends Fragment {
 
     DBOpenHelper helper;
     SQLiteDatabase db;
+    public boolean isCheck[] = new boolean[15];
 
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
@@ -154,53 +158,64 @@ public class YoutubeJjim extends Fragment {
 
         @Override
         public View getView(final int position, View convertView, ViewGroup parent) {
-            GenreDetailView view = new GenreDetailView(getContext());
+            final Context context = parent.getContext();
+            View v = convertView;
+
+            if (v == null) {
+                LayoutInflater inflater = (LayoutInflater) context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
+                v = inflater.inflate(R.layout.genre_detail, parent, false);
+            }
+            Button button2 = (Button) v.findViewById(R.id.button2);
+            TextView textView = (TextView) v.findViewById(R.id.textView);
+            ImageView imageView=(ImageView) v.findViewById(R.id.imageView);
+            CheckBox favoriteBtn = (CheckBox) v.findViewById(R.id.favorite);
 
             GenreItem item = items.get(position);
-            view.setName(item.getName());
-
-            ImageView imageView = view.findViewById(R.id.imageView);
-            String imageUrl = list.get(position).thumbnail;
-            ImageLoadTask task = new ImageLoadTask(imageUrl,imageView);
-            task.execute();
-
-            final Button button = (Button) view.findViewById(R.id.button);
+            textView.setText(item.getName());
 
             songJjimList = helper.selectSongJjim();
-            for (int i = 0; i < list.size(); i++) {
-                for (int j = 0; j < songJjimList.size(); j++) {
-                    if (songJjimList.get(j).Id == list.get(i).Id) {
-                        button.setText("취소");
-                    } else {
-                        button.setText("찜");
+
+            for (int i = 0; i < songJjimList.size(); i++) {
+                for (int j = 0; j < list.size(); j++) {
+                    if (songJjimList.get(i).Id.equals(list.get(j).Id)) {
+                        isCheck[j] = true;
+                    } else if (isCheck[j] == true) {
+                        isCheck[j] = true;
+                    } else if (isCheck[j] == false && !songJjimList.get(i).Id.equals(list.get(j).Id)){
+                        isCheck[j] = false;
                     }
                 }
             }
 
-            button.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View v) {
-                    try {
-                        i += 1;
-                        if (button.getText().equals("찜")) {
-                            helper.insertSongJjim(list.get(position).Id, list.get(position).title, list.get(position).thumbnail);
-                            Log.d("DB", "노래 찜 추가됨");
-                            button.setText("취소");
-                        } else {
-                            button.setText("찜");
+            if (item != null) {
+                if (favoriteBtn != null) {
+                    favoriteBtn.setChecked(false);
+                    CheckBox cbox = (CheckBox)(v.findViewById(R.id.favorite));
+                    cbox.setChecked(isCheck[position]);
+                    cbox.setOnClickListener(new View.OnClickListener() {
+                        @Override
+                        public void onClick(View v) {
+                            if(isCheck[position]) {
+                                isCheck[position] = false;
+                                helper.deleteSongJjim(list.get(position).Id);
+                            } else{
+                                isCheck[position] = true;
+                                helper.insertSongJjim(list.get(position).Id, list.get(position).title, list.get(position).thumbnail);
+                            }
                         }
-                    } catch (Exception e) {
-                        System.err.println("오류 있음 " + e.getMessage() + e.getCause());
-                    }
+                    });
+                    favoriteBtn.setChecked(isCheck[position]);
                 }
-            });
+            }
 
-            Button button2 = (Button) view.findViewById(R.id.button2);
+            String imageUrl = list.get(position).thumbnail;
+            ImageLoadTask task = new ImageLoadTask(imageUrl,imageView);
+            task.execute();
+
             button2.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
                     try {
-
                         FeedTemplate params = FeedTemplate
                                 .newBuilder(ContentObject.newBuilder(list.get(position).title,
                                         list.get(position).thumbnail,
@@ -214,7 +229,6 @@ public class YoutubeJjim extends Fragment {
                         serverCallbackArgs.put("user_id", "${current_user_id}");
                         serverCallbackArgs.put("product_id", "${shared_product_id}");
 
-
                         KakaoLinkService.getInstance().sendDefault(getContext(), params, new ResponseCallback<KakaoLinkResponse>() {
                             @Override
                             public void onFailure(ErrorResult errorResult) {
@@ -224,14 +238,13 @@ public class YoutubeJjim extends Fragment {
                             public void onSuccess(KakaoLinkResponse result) {
                             }
                         });
-
                     } catch (Exception e) {
                         System.err.println("오류 있음 " + e.getMessage() + e.getCause());
                     }
                 }
             });
 
-            return view;
+            return v;
         }
     }
     private class ImageLoadTask extends AsyncTask<Void,Void, Bitmap> {

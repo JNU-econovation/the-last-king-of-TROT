@@ -16,7 +16,7 @@
             android:id="@+id/textView"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
-            android:layout_weight="4"
+            android:layout_weight="3"
             android:text="가수명"
             android:textSize="20dp"
             android:layout_marginTop="15dp"
@@ -27,8 +27,8 @@
             android:id="@+id/favorite"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
-            android:layout_weight="4"
-            android:text="CheckBox" />
+            android:layout_weight="1"
+            android:text="찜" />
 
 
     </LinearLayout>
