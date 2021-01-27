@@ -71,7 +71,6 @@ public class MainActivity extends AppCompatActivity {
 
     private static final String TAG = "singer";
 
-    private String API_KEY = "AIzaSyDfc22EX6l8gpLQNEV_6EPRG-5Z2N4Lod8";
     private String result;
 
     ArrayList<SingerInfoList> singerInfoList;
@@ -176,7 +175,7 @@ public class MainActivity extends AppCompatActivity {
 
                 YouTube.Search.List search = youtube.search().list("id,snippet");
 
-                search.setKey(API_KEY);
+                search.setKey("AIzaSyDj90sSi-8jY45aeYME6oVi0Ce7b4OGBSo");
 
                 search.setQ("트로트");
                 // search.setChannelId("UCk9GmdlDTBfgGRb7vXeRMoQ"); //레드벨벳 공식 유투브 채널

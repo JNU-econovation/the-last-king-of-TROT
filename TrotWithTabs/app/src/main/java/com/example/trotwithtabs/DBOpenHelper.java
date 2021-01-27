@@ -39,7 +39,6 @@ public class DBOpenHelper extends SQLiteOpenHelper {
 
         db.execSQL("CREATE TABLE " + DB_TABLE_SINGER + "(" +
                 "number INTEGER PRIMARY KEY AUTOINCREMENT," +
-                "videoId TEXT, " +
                 "name TEXT)");
 
         Log.d("singerJjim ","가수 찜 테이블 생성");
@@ -80,13 +79,13 @@ public class DBOpenHelper extends SQLiteOpenHelper {
         return list;
     }
 
-    public boolean checkSongJjim(String videoId, String title, String thumbnail) {
+    public boolean checkSongJjim(String videoId) {
 
         SQLiteDatabase db = getWritableDatabase();
-        String[] tokens = {videoId, title, thumbnail};
+        String[] tokens = {videoId};
 
         String sql = "select * from songJjim ";
-        sql +=" where videoId = ? and title = ? and thumbnail = ? ";
+        sql +=" where videoId = ?";
 
         Cursor result;
 
@@ -114,17 +113,17 @@ public class DBOpenHelper extends SQLiteOpenHelper {
         ArrayList<SingerJjimList> list = new ArrayList<>();
         if (cursor.moveToFirst()) {
             do {
-                list.add(new SingerJjimList(cursor.getString(1), cursor.getString(2)));
+                list.add(new SingerJjimList(cursor.getString(1)));
             } while (cursor.moveToNext());
         }
         cursor.close();
         return list;
     }
 
-    public String selectSongJjimState(String videoId) {
+    public String selectSongJjimState() {
         SQLiteDatabase db = getWritableDatabase();
         String state = "";
-        Cursor cursor = db.rawQuery("SELECT * FROM " + DB_TABLE_SONG + " WHERE videoId = '" + videoId + "';", null);
+        Cursor cursor = db.rawQuery("SELECT * FROM " + DB_TABLE_SONG, null);
         if (cursor.moveToFirst()) {
             do {
                 state = cursor.getString(4);

@@ -35,6 +35,7 @@ import com.kakao.message.template.LinkObject;
 import com.kakao.network.ErrorResult;
 import com.kakao.network.callback.ResponseCallback;
 
+import org.apache.commons.lang3.StringEscapeUtils;
 import org.json.JSONArray;
 
 import java.net.URL;
@@ -55,6 +56,7 @@ public class GenreDetail extends Fragment {
     ArrayList<SongJjimList> songJjimList;
 
     private static final String TAG = "genre";
+    public boolean isCheck[] = new boolean[15];
 
     Fragment YoutubeGenre = new YoutubeGenre();
     boolean[] isJjim;
@@ -92,7 +94,7 @@ public class GenreDetail extends Fragment {
             GenreDetailAdapter adapter = new GenreDetailAdapter();
 
             for (int i = 0; i < 15; i++) {
-                adapter.addItem(new GenreItem(list.get(i).title));
+                adapter.addItem(new GenreItem(StringEscapeUtils.unescapeHtml3(list.get(i).title)));
             }
             listView.setAdapter(adapter);
 
@@ -118,6 +120,7 @@ public class GenreDetail extends Fragment {
 
         return rootView;
     }
+
     public class GenreDetailAdapter extends BaseAdapter {
         ArrayList<GenreItem> items = new ArrayList<GenreItem>();
 
@@ -143,113 +146,61 @@ public class GenreDetail extends Fragment {
 
         @Override
         public View getView(final int position, View convertView, ViewGroup parent) {
-            final GenreDetailView view = new GenreDetailView(getContext());
             final Context context = parent.getContext();
             View v = convertView;
-            final ViewHolder viewHolder;
 
             if (v == null) {
                 LayoutInflater inflater = (LayoutInflater) context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
                 v = inflater.inflate(R.layout.genre_detail, parent, false);
-
-                viewHolder = new ViewHolder();
-                viewHolder.button1 = (Button) v.findViewById(R.id.button);
-                viewHolder.button2 = (Button) v.findViewById(R.id.button2);
-                viewHolder.textView = (TextView) v.findViewById(R.id.textView);
-                viewHolder.imageView=(ImageView) v.findViewById(R.id.imageView);
-                viewHolder.favoriteBtn = (CheckBox) v.findViewById(R.id.favorite);
-                v.setTag(viewHolder);
-
-                songJjimList = helper.selectSongJjim();
-
-                for (int i = 0; i < songJjimList.size(); i++) {
-                    for (int j = 0; j < list.size(); j++) {
-                        if (songJjimList.get(i).state == 1) {
-                            isJjim[j] = true;
-                            Log.d("test", String.valueOf(isJjim[j]));
-                        } else {
-                            isJjim[j] = false;
-                            Log.d("test", String.valueOf(isJjim[j]));
-                        }
-                    }
-                }
-
-                viewHolder.favoriteBtn.setOnClickListener(new View.OnClickListener() {
-                    @Override
-                    public void onClick(View view) {
-                        CheckBox selectedBtn = (CheckBox) view;
-                        if (selectedBtn.isChecked()) {
-                            helper.insertSongJjim(list.get(position).Id, list.get(position).title, list.get(position).thumbnail);
-                            Log.d("DB", "노래 찜 추가됨");
-                            selectedBtn.setChecked(true);
-                        }
-                    }
-                });
-
-                if(viewHolder.favoriteBtn != null) {
-                    viewHolder.favoriteBtn.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
-                        @Override
-                        public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
-                            getPosition = (Integer) buttonView.getTag();
-                            //arrayList.get(Integer.valueOf(position)).setSelected(buttonView.isChecked());
-                        }
-                    });
-                }
-
-            } else {
-                viewHolder = (ViewHolder) v.getTag();
             }
-
-            //viewHolder.favoriteBtn.setChecked(getPosition);
+                Button button2 = (Button) v.findViewById(R.id.button2);
+                TextView textView = (TextView) v.findViewById(R.id.textView);
+                ImageView imageView=(ImageView) v.findViewById(R.id.imageView);
+                CheckBox favoriteBtn = (CheckBox) v.findViewById(R.id.favorite);
 
             GenreItem item = items.get(position);
-            viewHolder.textView.setText(item.getName());
+            textView.setText(item.getName());
 
-            //ImageView imageView = view.findViewById(R.id.imageView);
-            String imageUrl = list.get(position).thumbnail;
-            ImageLoadTask task = new ImageLoadTask(imageUrl,viewHolder.imageView);
-            task.execute();
+            songJjimList = helper.selectSongJjim();
 
-
-
-            //final Button button = (Button) view.findViewById(R.id.button);
-
-
-
-            /*
-            for (int i = 0; i < list.size(); i++) {
-                for (int j = 0; j < songJjimList.size(); j++) {
-                    if (list.get(i).title.equals(songJjimList.get(j).title)) {
-                        viewHolder.button1.setText("취소");
-                        Log.d("dbtest", "취소");
-                    }else{
-                        viewHolder.button1.setText("찜");
+            for (int i = 0; i < songJjimList.size(); i++) {
+                for (int j = 0; j < list.size(); j++) {
+                    if (songJjimList.get(i).Id.equals(list.get(j).Id)) {
+                        isCheck[j] = true;
+                    } else if (isCheck[j] == true) {
+                        isCheck[j] = true;
+                    } else if (isCheck[j] == false && !songJjimList.get(i).Id.equals(list.get(j).Id)){
+                        isCheck[j] = false;
                     }
                 }
             }
 
-             */
-
-            viewHolder.button1.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View v) {
-                    try {
-                        if (viewHolder.button1.getText().equals("찜")) {
-                            helper.insertSongJjim(list.get(position).Id, list.get(position).title, list.get(position).thumbnail);
-                            Log.d("DB", "노래 찜 추가됨");
-                            viewHolder.button1.setText("취소");
-                        } else {
-                            helper.deleteSongJjim(list.get(position).Id);
+            if (item != null) {
+                if (favoriteBtn != null) {
+                    favoriteBtn.setChecked(false);
+                    CheckBox cbox = (CheckBox)(v.findViewById(R.id.favorite));
+                    cbox.setChecked(isCheck[position]);
+                    cbox.setOnClickListener(new View.OnClickListener() {
+                        @Override
+                        public void onClick(View v) {
+                            if(isCheck[position]) {
+                                isCheck[position] = false;
+                                helper.deleteSongJjim(list.get(position).Id);
+                            } else{
+                                isCheck[position] = true;
+                                helper.insertSongJjim(list.get(position).Id, list.get(position).title, list.get(position).thumbnail);
+                            }
                         }
-
-                    } catch (Exception e) {
-                        System.err.println("오류 있음 " + e.getMessage() + e.getCause());
-                    }
+                    });
+                    favoriteBtn.setChecked(isCheck[position]);
                 }
-            });
+            }
 
-            //Button button2 = (Button) view.findViewById(R.id.button2);
-            viewHolder.button2.setOnClickListener(new View.OnClickListener() {
+            String imageUrl = list.get(position).thumbnail;
+            ImageLoadTask task = new ImageLoadTask(imageUrl,imageView);
+            task.execute();
+
+            button2.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
                     try {
@@ -283,6 +234,7 @@ public class GenreDetail extends Fragment {
 
             return v;
         }
+
         private void getApplicationContext() {
         }
 
@@ -301,17 +253,6 @@ public class GenreDetail extends Fragment {
             editor.apply();
         }
     }
-
-    public class ViewHolder {
-        Button button1;
-        Button button2;
-        TextView textView;
-        ImageView imageView;
-        CheckBox favoriteBtn;
-    }
-
-
-
 
     public static class ImageLoadTask extends AsyncTask<Void,Void, Bitmap> {
 

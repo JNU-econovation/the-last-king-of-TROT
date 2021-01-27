@@ -2,6 +2,7 @@ package com.example.trotwithtabs;
 
 import android.os.Parcel;
 import android.os.Parcelable;
+import android.widget.Button;
 
 public class GenreInfoList implements Parcelable {
     public String title;
@@ -42,5 +43,6 @@ public class GenreInfoList implements Parcelable {
         dest.writeString(title);
         dest.writeString(Id);
         dest.writeString(thumbnail);
+
     }
 }

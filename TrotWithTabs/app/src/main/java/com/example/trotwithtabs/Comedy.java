@@ -45,7 +45,6 @@ public class Comedy extends Fragment {
 
     private static final String TAG = "singer";
 
-    private String API_KEY = "AIzaSyDfc22EX6l8gpLQNEV_6EPRG-5Z2N4Lod8";
     private String result;
     int singerPosition;
     String[] list_singer = {"뽕숭아학당","사랑의 콜센타","트롯 전국체전","트로트의 민족"};
@@ -123,7 +122,7 @@ public class Comedy extends Fragment {
 
                 YouTube.Search.List search = youtube.search().list("id,snippet");
 
-                search.setKey(API_KEY);
+                search.setKey("AIzaSyDj90sSi-8jY45aeYME6oVi0Ce7b4OGBSo");
 
                 String singerName=list_singer[singerPosition];
                 search.setQ(singerName);

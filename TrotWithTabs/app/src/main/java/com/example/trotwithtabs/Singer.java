@@ -13,7 +13,9 @@ import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.BaseAdapter;
 import android.widget.Button;
+import android.widget.CheckBox;
 import android.widget.ListView;
+import android.widget.TextView;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -47,7 +49,6 @@ public class Singer extends Fragment {
 
     private static final String TAG = "singer";
 
-    private String API_KEY = "AIzaSyDfc22EX6l8gpLQNEV_6EPRG-5Z2N4Lod8";
     private String result;
     int singerPosition;
     String[] list_singer = {"임영웅","정동원","이찬원","영탁","김호중","장민호","김희재","조명섭","송가인","나훈아","장윤정"};
@@ -56,6 +57,7 @@ public class Singer extends Fragment {
     String singerName;
 
     ArrayList<SingerJjimList> singerJjimList;
+    public boolean isCheck[] = new boolean[15];
     int i = 0;
 
 
@@ -129,7 +131,7 @@ public class Singer extends Fragment {
 
                 YouTube.Search.List search = youtube.search().list("id,snippet");
 
-                search.setKey(API_KEY);
+                search.setKey("AIzaSyDj90sSi-8jY45aeYME6oVi0Ce7b4OGBSo");
 
                 singerName=list_singer[singerPosition];
                 search.setQ(singerName);
@@ -223,32 +225,56 @@ public class Singer extends Fragment {
 
         @Override
         public View getView(final int position, View convertView, ViewGroup parent) {
-            SingerItemView view = new SingerItemView(getContext());
-            final Button button = (Button) view.findViewById(R.id.button);
-            singerJjimList = helper.selectSingerJjim();
-            button.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View v) {
-                    try {
-                        i += 1;
-                        if (button.getText().equals("찜")) {
-                            helper.insertSingerJjim(list_singer[position]);
-                            Log.d("DB", "노래 찜 추가됨");
-                            button.setText("취소");
-                        } else {
-                            button.setText("찜");
-                            helper.deleteSingerJjim(list_singer[position]);
-                        }
-                    } catch (Exception e) {
-                        System.err.println("오류 있음 " + e.getMessage() + e.getCause());
-                    }
-                }
-            });
+            final Context context = parent.getContext();
+            View v = convertView;
+
+            if (v == null) {
+                LayoutInflater inflater = (LayoutInflater) context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
+                v = inflater.inflate(R.layout.singer_item, parent, false);
+            }
+            TextView textView = (TextView) v.findViewById(R.id.textView);
+            CheckBox favoriteBtn = (CheckBox) v.findViewById(R.id.favorite);
 
             SingerItem item = items.get(position);
-            view.setName(item.getName());
+            textView.setText(item.getName());
 
-            return view;
+            singerJjimList = helper.selectSingerJjim();
+
+            for (int i = 0; i < singerJjimList.size(); i++) {
+                for (int j = 0; j < list_singer.length; j++) {
+                    if (singerJjimList.get(i).name.equals(list_singer[j])) {
+                        isCheck[j] = true;
+                    } else if (isCheck[j] == true) {
+                        isCheck[j] = true;
+                    } else if (isCheck[j] == false && !singerJjimList.get(i).name.equals(list_singer[j])){
+                        isCheck[j] = false;
+                    }
+                }
+            }
+
+            if (item != null) {
+                if (favoriteBtn != null) {
+                    favoriteBtn.setChecked(false);
+                    CheckBox cbox = (CheckBox)(v.findViewById(R.id.favorite));
+                    cbox.setChecked(isCheck[position]);
+                    cbox.setOnClickListener(new View.OnClickListener() {
+                        @Override
+                        public void onClick(View v) {
+                            if(isCheck[position]) {
+                                isCheck[position] = false;
+                                helper.deleteSingerJjim(list_singer[position]);
+                                //resetSingerJjimList();
+                            } else{
+                                isCheck[position] = true;
+                                helper.insertSingerJjim(list_singer[position]);
+                            }
+                        }
+                    });
+                    favoriteBtn.setChecked(isCheck[position]);
+                }
+            }
+
+            return v;
         }
 
         private void getApplicationContext() {
