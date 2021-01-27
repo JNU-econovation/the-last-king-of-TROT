@@ -27,8 +27,9 @@
             android:id="@+id/favorite"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
-            android:layout_weight="1"
-            android:text="찜" />
+            android:layout_weight="0.5"
+            android:text="찜"
+            android:layout_gravity="center_vertical"/>
 
 
     </LinearLayout>

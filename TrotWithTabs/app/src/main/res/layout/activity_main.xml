@@ -22,17 +22,18 @@
                 android:id="@+id/toolbar">
 
             </androidx.appcompat.widget.Toolbar>
+
             <com.google.android.material.tabs.TabLayout
+                android:id="@+id/tabs"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:elevation="1dp"
                 android:background="@color/cardview_light_background"
-                app:tabMode="fixed"
+                android:elevation="1dp"
                 app:tabGravity="fill"
-                app:tabTextColor="@color/colorPrimary"
+                app:tabMode="fixed"
                 app:tabSelectedTextColor="@color/colorAccent"
-                android:id="@+id/tabs"
-                >
+                app:tabTextAppearance="@style/TextAppearance.AppCompat.Medium"
+                app:tabTextColor="@color/colorPrimary">
 
             </com.google.android.material.tabs.TabLayout>
         </com.google.android.material.appbar.AppBarLayout>

@@ -57,7 +57,6 @@ public class YoutubeSinger extends Fragment {
     private static final String TAG = "YoutubeID";
     String singerId;
     ArrayList<SingerInfoList> list;
-    ArrayList<SingerJjimList> singerJjimList;
     ViewGroup rootView;
     ListView listView;
     int firstPosition;
