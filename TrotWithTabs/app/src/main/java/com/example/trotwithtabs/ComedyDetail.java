@@ -53,11 +53,12 @@ public class ComedyDetail extends Fragment {
 
     ArrayList<SingerInfoList> list;
     ArrayList<SongJjimList> songJjimList;
-    public boolean isCheck[] = new boolean[15];
+    public boolean isCheck[] = new boolean[50];
 
     private static final String TAG = "comedy";
 
     Fragment YoutubeSinger = new YoutubeSinger();
+    int querySize;
 
     public void onAttach(@NonNull Context context) {
         super.onAttach(context);
@@ -70,7 +71,7 @@ public class ComedyDetail extends Fragment {
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-
+        querySize=50;
     }
 
     @Nullable
@@ -91,7 +92,7 @@ public class ComedyDetail extends Fragment {
 
             SingerDetailAdapter adapter = new SingerDetailAdapter();
 
-            for (int i = 0; i < 15; i++) {
+            for (int i = 0; i < querySize; i++) {
                 adapter.addItem(new SingerItem(StringEscapeUtils.unescapeHtml3(list.get(i).title)));
             }
             listView.setAdapter(adapter);

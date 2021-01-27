@@ -63,13 +63,14 @@ public class YoutubeSinger extends Fragment {
     DBOpenHelper helper;
     SQLiteDatabase db;
     int i = 0;
-    public boolean isCheck[] = new boolean[15];
+    public boolean isCheck[] = new boolean[50];
     ArrayList<SongJjimList> songJjimList;
+    int querySize;
 
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-
+        querySize=50;
     }
 
     @Nullable
@@ -102,7 +103,7 @@ public class YoutubeSinger extends Fragment {
             //리스트뷰 구현 파트
             SingerDetailAdapter adapter = new SingerDetailAdapter();
 
-            for (int i = 0; i < 15; i++) {
+            for (int i = 0; i < querySize; i++) {
                 adapter.addItem(new SingerItem(list.get(i).title));
             }
 
@@ -180,7 +181,7 @@ public class YoutubeSinger extends Fragment {
             songJjimList = helper.selectSongJjim();
 
             for (int i = 0; i < songJjimList.size(); i++) {
-                for (int j = 0; j < list.size(); j++) {
+                for (int j = 0; j < querySize; j++) {
                     if (songJjimList.get(i).Id.equals(list.get(j).Id)) {
                         isCheck[j] = true;
                     } else if (isCheck[j] == true) {

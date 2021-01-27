@@ -54,11 +54,12 @@ public class GenreDetail extends Fragment {
     ArrayList<SongJjimList> songJjimList;
 
     private static final String TAG = "genre";
-    public boolean isCheck[] = new boolean[15];
+    public boolean isCheck[] = new boolean[50];
 
     Fragment YoutubeGenre = new YoutubeGenre();
     boolean[] isJjim;
     int getPosition;
+    int querySize;
 
     public void onAttach(@NonNull Context context) {
         super.onAttach(context);
@@ -71,6 +72,8 @@ public class GenreDetail extends Fragment {
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        querySize=50;
+
     }
 
     @Nullable
@@ -91,7 +94,7 @@ public class GenreDetail extends Fragment {
 
             GenreDetailAdapter adapter = new GenreDetailAdapter();
 
-            for (int i = 0; i < 15; i++) {
+            for (int i = 0; i < querySize; i++) {
                 adapter.addItem(new GenreItem(StringEscapeUtils.unescapeHtml3(list.get(i).title)));
             }
             listView.setAdapter(adapter);

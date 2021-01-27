@@ -65,11 +65,13 @@ public class YoutubeGenre extends Fragment {
     DBOpenHelper helper;
     SQLiteDatabase db;
     int i = 0;
-    public boolean isCheck[] = new boolean[15];
+    public boolean isCheck[] = new boolean[50];
+    int querySize;
 
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        querySize=50;
 
     }
 
@@ -99,7 +101,7 @@ public class YoutubeGenre extends Fragment {
 
             GenreDetailAdapter adapter = new GenreDetailAdapter();
 
-            for (int i = 0; i < 15; i++) {
+            for (int i = 0; i < querySize; i++) {
                 adapter.addItem(new GenreItem(list.get(i).title));
             }
 
