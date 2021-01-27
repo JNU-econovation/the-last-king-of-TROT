@@ -24,6 +24,7 @@ import android.widget.TextView;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
+import androidx.fragment.app.FragmentTransaction;
 
 import com.google.api.client.googleapis.json.GoogleJsonResponseException;
 import com.google.api.client.http.HttpRequest;
@@ -62,11 +63,10 @@ public class Jjim extends Fragment {
     MainActivity activity;
     Context context;
 
-    ArrayList<SongJjimList> list;
     ArrayList<SongJjimList> songJjimList;
     ArrayList<SingerJjimList> singerJjimList;
-    ArrayList<SingerInfoList> singerInfoList;
-    ArrayList<SingerInfoList> singerInfoList2;
+    SingerDetailAdapter singerDetailAdapter;
+    SingerItemAdapter singerItemAdapter;
     ListView listView;
     String singerName;
     public boolean isCheck[] = new boolean[15];
@@ -104,8 +104,6 @@ public class Jjim extends Fragment {
         helper = new DBOpenHelper(this.getContext());
         db = helper.getWritableDatabase();
 
-        list = new ArrayList<>();
-
         songJjimList = helper.selectSongJjim();
         singerJjimList = helper.selectSingerJjim();
 
@@ -130,13 +128,13 @@ public class Jjim extends Fragment {
 
     public void getSongJjimList() {
         try {
-            SingerDetailAdapter adapter = new SingerDetailAdapter();
+            singerDetailAdapter = new SingerDetailAdapter();
 
             for (int i = 0; i < songJjimList.size(); i++) {
-                adapter.addItem(new SingerItem(songJjimList.get(i).title));
+                singerDetailAdapter.addItem(new SingerItem(songJjimList.get(i).title));
             }
 
-            listView.setAdapter(adapter);
+            listView.setAdapter(singerDetailAdapter);
             listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
                 @Override
                 public void onItemClick(AdapterView<?> parent, View view,
@@ -157,13 +155,13 @@ public class Jjim extends Fragment {
 
     public void getSingerJjimList() {
         try {
-            SingerItemAdapter adapter = new SingerItemAdapter();
+            SingerItemAdapter singerItemAdapter = new SingerItemAdapter();
 
             for (int i = 0; i < singerJjimList.size(); i++) {
-                adapter.addItem(new SingerItem(singerJjimList.get(i).name));
+                singerItemAdapter.addItem(new SingerItem(singerJjimList.get(i).name));
             }
 
-            listView.setAdapter(adapter);
+            listView.setAdapter(singerItemAdapter);
             listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
                 @Override
                 public void onItemClick(AdapterView<?> parent, View view,
@@ -247,7 +245,7 @@ public class Jjim extends Fragment {
                             if(isCheck[position]) {
                                 isCheck[position] = false;
                                 helper.deleteSongJjim(songJjimList.get(position).Id);
-                                //resetSongJjimList();
+                                refresh();
                             } else{
                                 isCheck[position] = true;
                                 helper.insertSongJjim(songJjimList.get(position).Id, songJjimList.get(position).title, songJjimList.get(position).thumbnail);
@@ -302,19 +300,7 @@ public class Jjim extends Fragment {
         private void getApplicationContext() {
         }
     }
-/*
-    private void resetSongJjimList() {
-        SingerDetailAdapter adapter = (SingerDetailAdapter) listView.getAdapter();
-        adapter.notifyDataSetChanged();
-        listView.setAdapter(adapter);
-    }
 
-    private void resetSingerJjimList() {
-        SingerItemAdapter adapter = (SingerItemAdapter) listView.getAdapter();
-        adapter.notifyDataSetChanged();
-        listView.setAdapter(adapter);
-    }
-*/
     class SingerItemAdapter extends BaseAdapter {
         ArrayList<SingerItem> items = new ArrayList<SingerItem>();
 
@@ -377,7 +363,8 @@ public class Jjim extends Fragment {
                             if(isCheck[position]) {
                                 isCheck[position] = false;
                                 helper.deleteSingerJjim(singerJjimList.get(position).name);
-                                //resetSingerJjimList();
+                                refresh();
+                                getSongJjimList();
                             } else{
                                 isCheck[position] = true;
                                 helper.insertSingerJjim(singerJjimList.get(position).name);
@@ -465,5 +452,10 @@ public class Jjim extends Fragment {
             imageView.setImageBitmap(bitmap);
             imageView.invalidate();
         }
+    }
+
+    private void refresh() {
+        FragmentTransaction ft = getFragmentManager().beginTransaction();
+        ft.detach(this).attach(this).commit();
     }
 }
