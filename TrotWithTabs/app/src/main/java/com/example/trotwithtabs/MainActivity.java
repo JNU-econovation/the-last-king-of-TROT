@@ -81,14 +81,15 @@ public class MainActivity extends AppCompatActivity {
     ArrayList<SingerInfoList> singerInfoList;
     ArrayList<SingerInfoList> singerInfoList2 = new ArrayList<>();
 
-    private long backKeyPressedTime = 0;
-    private Toast toast;
+    int querySize;
 
     @RequiresApi(api = Build.VERSION_CODES.LOLLIPOP)
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+
+        querySize=50;
 
         getHashKey();
         String keyHash = com.kakao.util.helper.Utility.getKeyHash(this /* context */);
@@ -206,7 +207,7 @@ public class MainActivity extends AppCompatActivity {
             try {
                 HttpTransport HTTP_TRANSPORT = new NetHttpTransport();
                 final JsonFactory JSON_FACTORY = new JacksonFactory();
-                final long NUMBER_OF_VIDEOS_RETURNED = 15;
+                final long NUMBER_OF_VIDEOS_RETURNED = querySize;
 
                 YouTube youtube = new YouTube.Builder(HTTP_TRANSPORT, JSON_FACTORY, new HttpRequestInitializer() {
                     public void initialize(HttpRequest request) throws IOException {
@@ -215,7 +216,7 @@ public class MainActivity extends AppCompatActivity {
 
                 YouTube.Search.List search = youtube.search().list("id,snippet");
 
-                search.setKey("AIzaSyDj90sSi-8jY45aeYME6oVi0Ce7b4OGBSo");
+                search.setKey("AIzaSyBMMHD7X6Gd3b5givUBcMjClmKkWqU4Exw");
 
                 search.setQ("트로트");
                 // search.setChannelId("UCk9GmdlDTBfgGRb7vXeRMoQ"); //레드벨벳 공식 유투브 채널
@@ -347,7 +348,7 @@ public class MainActivity extends AppCompatActivity {
             try {
                 HttpTransport HTTP_TRANSPORT = new NetHttpTransport();
                 final JsonFactory JSON_FACTORY = new JacksonFactory();
-                final long NUMBER_OF_VIDEOS_RETURNED = 15;
+                final long NUMBER_OF_VIDEOS_RETURNED = querySize;
 
                 YouTube youtube = new YouTube.Builder(HTTP_TRANSPORT, JSON_FACTORY, new HttpRequestInitializer() {
                     public void initialize(HttpRequest request) throws IOException {
@@ -356,7 +357,7 @@ public class MainActivity extends AppCompatActivity {
 
                 YouTube.Search.List search = youtube.search().list("id,snippet");
 
-                search.setKey("AIzaSyDj90sSi-8jY45aeYME6oVi0Ce7b4OGBSo");
+                search.setKey("AIzaSyBMMHD7X6Gd3b5givUBcMjClmKkWqU4Exw");
 
                 search.setQ(searchStr);
                 // search.setChannelId("UCk9GmdlDTBfgGRb7vXeRMoQ"); //레드벨벳 공식 유투브 채널

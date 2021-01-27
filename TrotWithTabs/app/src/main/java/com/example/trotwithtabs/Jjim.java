@@ -70,7 +70,7 @@ public class Jjim extends Fragment {
     ListView listView;
     String singerName;
     Fragment singerDetail = new SingerDetail();
-    public boolean isCheck[] = new boolean[15];
+    public boolean isCheck[] = new boolean[50];
     ArrayList<SingerInfoList> singerInfoList;
     ArrayList<SingerInfoList> singerInfoList2;
     private String result;
@@ -81,6 +81,8 @@ public class Jjim extends Fragment {
     private static final String TAG = "singer";
 
     Fragment YoutubeJjim = new YoutubeJjim();
+
+    int querySize;
 
     public void onAttach(@NonNull Context context) {
         super.onAttach(context);
@@ -93,6 +95,7 @@ public class Jjim extends Fragment {
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        querySize=50;
     }
 
     @Nullable
@@ -464,7 +467,7 @@ public class Jjim extends Fragment {
             try {
                 HttpTransport HTTP_TRANSPORT = new NetHttpTransport();
                 final JsonFactory JSON_FACTORY = new JacksonFactory();
-                final long NUMBER_OF_VIDEOS_RETURNED = 15;
+                final long NUMBER_OF_VIDEOS_RETURNED = querySize;
 
                 YouTube youtube = new YouTube.Builder(HTTP_TRANSPORT, JSON_FACTORY, new HttpRequestInitializer() {
                     public void initialize(HttpRequest request) throws IOException {
@@ -473,7 +476,7 @@ public class Jjim extends Fragment {
 
                 YouTube.Search.List search = youtube.search().list("id,snippet");
 
-                search.setKey("AIzaSyDj90sSi-8jY45aeYME6oVi0Ce7b4OGBSo");
+                search.setKey("AIzaSyBMMHD7X6Gd3b5givUBcMjClmKkWqU4Exw");
 
                 search.setQ(singerName);
                 search.setOrder("relevance"); //date relevance

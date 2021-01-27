@@ -53,10 +53,11 @@ public class SingerDetail extends Fragment {
     String Id;
     String thumbnail;
     int i = 0;
-    public boolean isCheck[] = new boolean[15];
+    public boolean isCheck[] = new boolean[50];
     ArrayList<SongJjimList> songJjimList;
     
     private View header;
+    int querySize;
 
     public void onAttach(@NonNull Context context) {
         super.onAttach(context);
@@ -69,6 +70,7 @@ public class SingerDetail extends Fragment {
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        querySize=50;
     }
 
     @Nullable
@@ -90,7 +92,7 @@ public class SingerDetail extends Fragment {
 
             SingerDetailAdapter adapter = new SingerDetailAdapter();
 
-            for (int i = 0; i < 15; i++) {
+            for (int i = 0; i < querySize; i++) {
                 adapter.addItem(new SingerItem(StringEscapeUtils.unescapeHtml3(list.get(i).title)));
             }
 

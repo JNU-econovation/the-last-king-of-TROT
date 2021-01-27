@@ -51,6 +51,8 @@ public class Comedy extends Fragment {
     ArrayList<SingerInfoList> singerInfoList;
     ArrayList<SingerInfoList> singerInfoList2;
 
+    int querySize;
+
 
 
     public void onAttach(@NonNull Context context) {
@@ -64,6 +66,7 @@ public class Comedy extends Fragment {
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        querySize=50;
     }
 
     @Nullable
@@ -113,7 +116,7 @@ public class Comedy extends Fragment {
             try {
                 HttpTransport HTTP_TRANSPORT = new NetHttpTransport();
                 final JsonFactory JSON_FACTORY = new JacksonFactory();
-                final long NUMBER_OF_VIDEOS_RETURNED = 15;
+                final long NUMBER_OF_VIDEOS_RETURNED = querySize;
 
                 YouTube youtube = new YouTube.Builder(HTTP_TRANSPORT, JSON_FACTORY, new HttpRequestInitializer() {
                     public void initialize(HttpRequest request) throws IOException {
@@ -122,7 +125,7 @@ public class Comedy extends Fragment {
 
                 YouTube.Search.List search = youtube.search().list("id,snippet");
 
-                search.setKey("AIzaSyDj90sSi-8jY45aeYME6oVi0Ce7b4OGBSo");
+                search.setKey("AIzaSyBMMHD7X6Gd3b5givUBcMjClmKkWqU4Exw");
 
                 String singerName=list_singer[singerPosition];
                 search.setQ(singerName);

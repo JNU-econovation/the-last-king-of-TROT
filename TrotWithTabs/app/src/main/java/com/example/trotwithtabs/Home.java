@@ -23,10 +23,10 @@ public class Home extends Fragment {
         final String[][] TrotSchedule = new String[3][32];
         TrotSchedule[1]= new String[]{"","","","","","","","","","",
                 "","","","","","","","","","",
-                "","","","","","뽕숭아학당 오후 8시 TV조선", "사랑의 콜센타 오후 10시","뽕숭아학당 오후 8시 TV조선","뽕숭아학당 오후 8시 TV조선","","",""};
-        TrotSchedule[2]= new String[]{"낌","화이팅","","","","","","","","",
+                "","","","","","뽕숭아학당 오후 8시 TV조선", "사랑의 콜센타 오후 10시","뽕숭아학당 오후 8시 TV조선","뽕숭아학당 오후 8시 TV조선","사랑의 콜센타 오후 10시","사랑의 콜센타 오후 10시",""};
+        TrotSchedule[2]= new String[]{"","","","","","","","","","",
                 "","","","","","","","","","",
-                "","","","","","뽕숭아학당 오후 8시 TV조선", "사랑의 콜센타 오후 10시","","","","",""};
+                "","","","","","", "","","","","",""};
 
         final TextView textViewCalendar = rootView.findViewById(R.id.textViewCalendar);
         CalendarView calendarView = rootView.findViewById(R.id.calendarView);

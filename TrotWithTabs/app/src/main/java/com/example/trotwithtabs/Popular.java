@@ -54,9 +54,10 @@ public class Popular extends Fragment {
     int i = 0;
 
     private static final String TAG = "singer";
-    public boolean isCheck[] = new boolean[15];
+    public boolean isCheck[] = new boolean[50];
 
     Fragment YoutubeSinger = new YoutubeSinger();
+    int querySize;
 
     public void onAttach(@NonNull Context context) {
         super.onAttach(context);
@@ -69,6 +70,7 @@ public class Popular extends Fragment {
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        querySize=50;
     }
 
     @Nullable
@@ -89,7 +91,7 @@ public class Popular extends Fragment {
 
             SingerDetailAdapter adapter = new SingerDetailAdapter();
 
-            for (int i = 0; i < 15; i++) {
+            for (int i = 0; i < querySize; i++) {
                 adapter.addItem(new SingerItem(list.get(i).title));
             }
 
@@ -159,7 +161,7 @@ public class Popular extends Fragment {
             songJjimList = helper.selectSongJjim();
 
             for (int i = 0; i < songJjimList.size(); i++) {
-                for (int j = 0; j < list.size(); j++) {
+                for (int j = 0; j < querySize; j++) {
                     if (songJjimList.get(i).Id.equals(list.get(j).Id)) {
                         isCheck[j] = true;
                     } else if (isCheck[j] == true) {

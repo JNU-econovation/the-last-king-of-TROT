@@ -63,11 +63,13 @@ public class YoutubeJjim extends Fragment {
 
     DBOpenHelper helper;
     SQLiteDatabase db;
-    public boolean isCheck[] = new boolean[15];
+    public boolean isCheck[] = new boolean[50];
+    int querySize;
 
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        querySize=50;
 
     }
 
