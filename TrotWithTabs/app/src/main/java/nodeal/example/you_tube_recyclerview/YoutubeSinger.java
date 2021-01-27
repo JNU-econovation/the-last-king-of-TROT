@@ -7,6 +7,7 @@ import androidx.recyclerview.widget.DefaultItemAnimator;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import android.content.Context;
 import android.database.sqlite.SQLiteDatabase;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
@@ -19,15 +20,19 @@ import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.BaseAdapter;
 import android.widget.Button;
+import android.widget.CheckBox;
 import android.widget.ImageView;
 import android.widget.ListView;
+import android.widget.TextView;
 
 import com.example.trotwithtabs.DBOpenHelper;
 import com.example.trotwithtabs.R;
+import com.example.trotwithtabs.SingerDetail;
 import com.example.trotwithtabs.SingerDetailView;
 import com.example.trotwithtabs.SingerInfoList;
 import com.example.trotwithtabs.SingerItem;
 import com.example.trotwithtabs.SingerJjimList;
+import com.example.trotwithtabs.SongJjimList;
 import com.kakao.kakaolink.v2.KakaoLinkResponse;
 import com.kakao.kakaolink.v2.KakaoLinkService;
 import com.kakao.message.template.ButtonObject;
@@ -59,6 +64,8 @@ public class YoutubeSinger extends Fragment {
     DBOpenHelper helper;
     SQLiteDatabase db;
     int i = 0;
+    public boolean isCheck[] = new boolean[15];
+    ArrayList<SongJjimList> songJjimList;
 
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
@@ -156,38 +163,60 @@ public class YoutubeSinger extends Fragment {
 
         @Override
         public View getView(final int position, View convertView, ViewGroup parent) {
-            SingerDetailView view = new SingerDetailView(getContext());
+            final Context context = parent.getContext();
+            View v = convertView;
+
+            if (v == null) {
+                LayoutInflater inflater = (LayoutInflater) context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
+                v = inflater.inflate(R.layout.singer_detail, parent, false);
+            }
+            Button button2 = (Button) v.findViewById(R.id.button2);
+            TextView textView = (TextView) v.findViewById(R.id.textView);
+            ImageView imageView=(ImageView) v.findViewById(R.id.imageView);
+            CheckBox favoriteBtn = (CheckBox) v.findViewById(R.id.favorite);
 
             SingerItem item = items.get(position);
-            view.setName(item.getName());
+            textView.setText(item.getName());
 
-            ImageView imageView = view.findViewById(R.id.imageView);
+            songJjimList = helper.selectSongJjim();
+
+            for (int i = 0; i < songJjimList.size(); i++) {
+                for (int j = 0; j < list.size(); j++) {
+                    if (songJjimList.get(i).Id.equals(list.get(j).Id)) {
+                        isCheck[j] = true;
+                    } else if (isCheck[j] == true) {
+                        isCheck[j] = true;
+                    } else if (isCheck[j] == false && !songJjimList.get(i).Id.equals(list.get(j).Id)){
+                        isCheck[j] = false;
+                    }
+                }
+            }
+
+            if (item != null) {
+                if (favoriteBtn != null) {
+                    favoriteBtn.setChecked(false);
+                    CheckBox cbox = (CheckBox)(v.findViewById(R.id.favorite));
+                    cbox.setChecked(isCheck[position]);
+                    cbox.setOnClickListener(new View.OnClickListener() {
+                        @Override
+                        public void onClick(View v) {
+                            if(isCheck[position]) {
+                                isCheck[position] = false;
+                                helper.deleteSongJjim(list.get(position).Id);
+                            } else{
+                                isCheck[position] = true;
+                                helper.insertSongJjim(list.get(position).Id, list.get(position).title, list.get(position).thumbnail);
+                            }
+                        }
+                    });
+                    favoriteBtn.setChecked(isCheck[position]);
+                }
+            }
+
             String imageUrl = list.get(position).thumbnail;
             ImageLoadTask task = new ImageLoadTask(imageUrl,imageView);
             task.execute();
 
-            final Button button = (Button) view.findViewById(R.id.button);
-
-            button.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View v) {
-                    try {
-                        i += 1;
-                        if (button.getText().equals("찜")) {
-                            helper.insertSongJjim(list.get(position).Id, list.get(position).title, list.get(position).thumbnail);
-                            Log.d("DB", "노래 찜 추가됨");
-                            button.setText("취소");
-                        } else {
-                            button.setText("찜");
-                            //helper.deleteSingerJjim(list_singer[position]);
-                        }
-                    } catch (Exception e) {
-                        System.err.println("오류 있음 " + e.getMessage() + e.getCause());
-                    }
-                }
-            });
-
-            Button button2 = (Button) view.findViewById(R.id.button2);
             button2.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
@@ -222,7 +251,7 @@ public class YoutubeSinger extends Fragment {
                 }
             });
 
-            return view;
+            return v;
         }
     }
     private class ImageLoadTask extends AsyncTask<Void,Void, Bitmap> {

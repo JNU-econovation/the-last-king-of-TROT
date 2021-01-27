@@ -31,19 +31,10 @@
         android:id="@+id/favorite"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_weight="1"
-        android:layout_gravity="center_vertical"
-        android:text="CheckBox" />
-
-    <Button
-        android:id="@+id/button"
-        android:layout_width="0dp"
-        android:layout_height="wrap_content"
         android:layout_gravity="center_vertical"
         android:layout_weight="1"
-        android:minHeight="0dp"
-        android:minWidth="0dp"
         android:text="찜" />
+
 
     <Button
         android:id="@+id/button2"
