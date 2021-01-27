@@ -1,11 +1,9 @@
 package com.example.trotwithtabs;
 
 import android.content.Context;
-import android.content.Intent;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.os.Parcelable;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -31,70 +29,49 @@ import com.google.api.services.youtube.model.SearchResult;
 import com.google.api.services.youtube.model.Thumbnail;
 
 import java.io.IOException;
-import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
-
-import nodeal.example.you_tube_recyclerview.YoutubeSinger;
 
 public class Comedy extends Fragment {
 
     MainActivity activity;
     Context context;
 
-    private static final String TAG = "singer";
-
-    private String result;
+    int querySize;
     int singerPosition;
-    String[] list_singer = {"뽕숭아학당","사랑의 콜센타","트롯 전국체전","트로트의 민족"};
+    String[] list_singer = {"뽕숭아학당","사랑의 콜센타","트롯 전국체전","트로트의 민족", "내일은 미스트롯2", "가요무대"};
     ArrayList<SingerInfoList> singerInfoList;
     ArrayList<SingerInfoList> singerInfoList2;
-
-    int querySize;
-
-
 
     public void onAttach(@NonNull Context context) {
         super.onAttach(context);
         this.context = context;
-
         activity = (MainActivity) getActivity();
-
     }
 
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        querySize=50;
+        querySize = 50;
     }
 
     @Nullable
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         ViewGroup rootView = (ViewGroup)inflater.inflate(R.layout.singer, container, false);
-
         ListView listView = (ListView) rootView.findViewById(R.id.listViewSinger);
-
         SingerAdapter adapter = new SingerAdapter();
-        adapter.addItem(new SingerItem("뽕숭아학당"));
-        adapter.addItem(new SingerItem("사랑의 콜센타"));
-        adapter.addItem(new SingerItem("트롯 전국체전"));
-        adapter.addItem(new SingerItem("트로트의 민족"));
-
+        for (int i = 0; i < list_singer.length; i++) {
+            adapter.addItem(new SingerItem(list_singer[i]));
+        }
         listView.setAdapter(adapter);
-
         listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
-
-
             @Override
-            public void onItemClick(AdapterView<?> parent, View view,
-                                    int position, long id) {
-
+            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
                 YoutubeAsyncTask youtubeAsyncTask = new YoutubeAsyncTask();
                 youtubeAsyncTask.execute();
                 singerPosition= ReturnSingerPosition(position);
-
             }
         });
 
@@ -123,23 +100,17 @@ public class Comedy extends Fragment {
                     }
                 }).setApplicationName("youtube-search-sample").build();
 
+                String singerName = list_singer[singerPosition];
                 YouTube.Search.List search = youtube.search().list("id,snippet");
-
                 search.setKey("AIzaSyBMMHD7X6Gd3b5givUBcMjClmKkWqU4Exw");
-
-                String singerName=list_singer[singerPosition];
                 search.setQ(singerName);
-                // search.setChannelId("UCk9GmdlDTBfgGRb7vXeRMoQ"); //레드벨벳 공식 유투브 채널
-                search.setOrder("relevance"); //date relevance
-
+                search.setOrder("relevance");
                 search.setType("video");
-
                 search.setFields("items(id/kind,id/videoId,snippet/title,snippet/thumbnails/default/url)");
                 search.setMaxResults(NUMBER_OF_VIDEOS_RETURNED);
+
                 SearchListResponse searchResponse = search.execute();
-
                 List<SearchResult> searchResultList = searchResponse.getItems();
-
                 if (searchResultList != null) {
                     prettyPrint(searchResultList.iterator(), singerName);
                 }
@@ -160,7 +131,7 @@ public class Comedy extends Fragment {
         protected void onPostExecute(Void aVoid) {
             super.onPostExecute(aVoid);
             Fragment comedyDetailFragment = new ComedyDetail();
-            singerInfoList=singerInfoList2;
+            singerInfoList = singerInfoList2;
 
             Bundle bundle=new Bundle();
             bundle.putParcelableArrayList("singerInfoList",(ArrayList<? extends Parcelable>) singerInfoList);
@@ -174,26 +145,16 @@ public class Comedy extends Fragment {
                 System.out.println(" There aren't any results for your query.");
             }
 
-            StringBuilder sb = new StringBuilder();
-
             singerInfoList2 = new ArrayList<>();
 
             while (iteratorSearchResults.hasNext()) {
                 SearchResult singleVideo = iteratorSearchResults.next();
                 ResourceId rId = singleVideo.getId();
-
-                // Double checks the kind is video.
                 if (rId.getKind().equals("youtube#video")) {
-
                     Thumbnail thumbnail = (Thumbnail) singleVideo.getSnippet().getThumbnails().get("default");
-                    singerInfoList2.add(new SingerInfoList(singleVideo.getSnippet().getTitle(),rId.getVideoId(),thumbnail.getUrl()));
-                    Log.d(TAG,singerInfoList2.get(0).title);
-                    Log.d(TAG,"하긴 함");
+                    singerInfoList2.add(new SingerInfoList(singleVideo.getSnippet().getTitle(), rId.getVideoId(), thumbnail.getUrl()));
                 }
-
             }
-
-            result = sb.toString();
         }
     }
 

@@ -12,8 +12,7 @@
         android:id="@+id/imageView"
         android:layout_width="0dp"
         android:layout_height="60dp"
-        android:layout_weight="1"
-        android:gravity="left"
+        android:layout_weight="1.5"
         tools:srcCompat="@tools:sample/avatars" />
 
     <TextView
@@ -29,21 +28,23 @@
 
     <CheckBox
         android:id="@+id/favorite"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
+        android:layout_width="25dp"
+        android:layout_height="24dp"
         android:layout_gravity="center_vertical"
-        android:layout_weight="0.1"
-        android:text="찜" />
+        android:background="@drawable/check_box"
+        android:button="@android:color/transparent"
+        android:layout_marginStart="10dp"
+        android:layout_marginEnd="10dp"/>
 
 
     <Button
         android:id="@+id/button2"
-        android:layout_width="0dp"
-        android:layout_height="wrap_content"
+        android:layout_width="25dp"
+        android:layout_height="25dp"
         android:layout_gravity="center_vertical"
-        android:layout_weight="1"
         android:minHeight="0dp"
         android:minWidth="0dp"
-        android:text="공유" />
+        android:layout_marginRight="10dp"
+        android:background="@drawable/ic_kakao_icon"/>
 
 </LinearLayout>
