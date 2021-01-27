@@ -48,9 +48,7 @@ import java.util.Map;
 
 public class SingerDetailView extends LinearLayout {
     TextView textView;
-    String title;
     private static final String TAG = "singerShare";
-
 
     public SingerDetailView(Context context) {
         super(context);
