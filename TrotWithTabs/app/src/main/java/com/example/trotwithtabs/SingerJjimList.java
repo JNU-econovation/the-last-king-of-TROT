@@ -4,18 +4,15 @@ import android.os.Parcel;
 import android.os.Parcelable;
 
 public class SingerJjimList implements Parcelable {
-    public String Id;
     public String name;
     //public int state;
 
-    public SingerJjimList(String id, String name) {
-        this.Id = id;
+    public SingerJjimList(String name) {
         this.name = name;
         //this.state = state;
     }
 
     protected SingerJjimList(Parcel in) {
-        Id = in.readString();
         name = in.readString();
         //state = in.readInt();
     }
@@ -39,7 +36,6 @@ public class SingerJjimList implements Parcelable {
 
     @Override
     public void writeToParcel(Parcel dest, int flags) {
-        dest.writeString(Id);
         dest.writeString(name);
         //dest.writeInt(state);
     }

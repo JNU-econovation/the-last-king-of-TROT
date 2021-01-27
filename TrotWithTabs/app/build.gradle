@@ -47,6 +47,7 @@ dependencies {
     compile group: 'com.google.http-client', name: 'google-http-client-jackson2', version: '1.11.0-beta'
 
     implementation group: 'com.kakao.sdk', name: 'kakaolink', version: project.KAKAO_SDK_VERSION
+    implementation 'org.apache.commons:commons-text:1.6'
 
 
 }

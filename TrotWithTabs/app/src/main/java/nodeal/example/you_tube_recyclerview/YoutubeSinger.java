@@ -168,17 +168,6 @@ public class YoutubeSinger extends Fragment {
 
             final Button button = (Button) view.findViewById(R.id.button);
 
-            singerJjimList = helper.selectSingerJjim();
-            for (int i = 0; i < list.size(); i++) {
-                for (int j = 0; j < singerJjimList.size(); j++) {
-                    if (singerJjimList.get(j).Id == list.get(i).Id) {
-                        button.setText("취소");
-                    } else {
-                        button.setText("찜");
-                    }
-                }
-            }
-
             button.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {

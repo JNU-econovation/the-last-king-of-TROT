@@ -42,7 +42,6 @@ public class Genre extends Fragment {
 
     private static final String TAG = "genre";
 
-    private String API_KEY = "AIzaSyDfc22EX6l8gpLQNEV_6EPRG-5Z2N4Lod8";
     private String result;
     int genrePosition;
     String[] list_genre = {"트로트 메들리","댄스트로트","전설의 트로트","최신 트로트","보이스트롯","미스트롯 송가인","미스터트롯","7080 메들리","7080 인기가수","강변가요제","대학가요제"};
@@ -114,7 +113,7 @@ public class Genre extends Fragment {
 
                 YouTube.Search.List search = youtube.search().list("id,snippet");
 
-                search.setKey(API_KEY);
+                search.setKey("AIzaSyDj90sSi-8jY45aeYME6oVi0Ce7b4OGBSo");
 
                 String genreName=list_genre[genrePosition];
                 //검색어 들어가는 부분

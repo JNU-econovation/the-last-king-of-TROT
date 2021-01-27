@@ -16,6 +16,7 @@ import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.BaseAdapter;
 import android.widget.Button;
+import android.widget.CheckBox;
 import android.widget.ImageView;
 import android.widget.ListView;
 import android.widget.TextView;
@@ -53,6 +54,7 @@ public class Popular extends Fragment {
     int i = 0;
 
     private static final String TAG = "singer";
+    public boolean isCheck[] = new boolean[15];
 
     Fragment YoutubeSinger = new YoutubeSinger();
 
@@ -139,48 +141,60 @@ public class Popular extends Fragment {
 
         @Override
         public View getView(final int position, View convertView, ViewGroup parent) {
-            SingerDetailView view = new SingerDetailView(getContext());
+            final Context context = parent.getContext();
+            View v = convertView;
+
+            if (v == null) {
+                LayoutInflater inflater = (LayoutInflater) context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
+                v = inflater.inflate(R.layout.singer_detail, parent, false);
+            }
+            Button button2 = (Button) v.findViewById(R.id.button2);
+            TextView textView = (TextView) v.findViewById(R.id.textView);
+            ImageView imageView=(ImageView) v.findViewById(R.id.imageView);
+            CheckBox favoriteBtn = (CheckBox) v.findViewById(R.id.favorite);
 
             SingerItem item = items.get(position);
-            view.setName(item.getName());
-
-            ImageView imageView = view.findViewById(R.id.imageView);
-            String imageUrl = list.get(position).thumbnail;
-            ImageLoadTask task = new ImageLoadTask(imageUrl, imageView);
-            task.execute();
-
-            final Button button = (Button) view.findViewById(R.id.button);
+            textView.setText(item.getName());
 
             songJjimList = helper.selectSongJjim();
-            for (int i = 0; i < list.size(); i++) {
-                for (int j = 0; j < songJjimList.size(); j++) {
-                    if (songJjimList.get(j).Id == list.get(i).Id) {
-                        button.setText("취소");
-                    } else {
-                        button.setText("찜");
+
+            for (int i = 0; i < songJjimList.size(); i++) {
+                for (int j = 0; j < list.size(); j++) {
+                    if (songJjimList.get(i).Id.equals(list.get(j).Id)) {
+                        isCheck[j] = true;
+                    } else if (isCheck[j] == true) {
+                        isCheck[j] = true;
+                    } else if (isCheck[j] == false && !songJjimList.get(i).Id.equals(list.get(j).Id)){
+                        isCheck[j] = false;
                     }
                 }
             }
 
-            button.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View v) {
-                    try {
-                        i += 1;
-                        if (button.getText().equals("찜")) {
-                            helper.insertSongJjim(list.get(position).Id, list.get(position).title, list.get(position).thumbnail);
-                            Log.d("DB", "노래 찜 추가됨");
-                            button.setText("취소");
-                        } else {
-                            button.setText("찜");
+            if (item != null) {
+                if (favoriteBtn != null) {
+                    favoriteBtn.setChecked(false);
+                    CheckBox cbox = (CheckBox)(v.findViewById(R.id.favorite));
+                    cbox.setChecked(isCheck[position]);
+                    cbox.setOnClickListener(new View.OnClickListener() {
+                        @Override
+                        public void onClick(View v) {
+                            if(isCheck[position]) {
+                                isCheck[position] = false;
+                                helper.deleteSongJjim(list.get(position).Id);
+                            } else{
+                                isCheck[position] = true;
+                                helper.insertSongJjim(list.get(position).Id, list.get(position).title, list.get(position).thumbnail);
+                            }
                         }
-                    } catch (Exception e) {
-                        System.err.println("오류 있음 " + e.getMessage() + e.getCause());
-                    }
+                    });
+                    favoriteBtn.setChecked(isCheck[position]);
                 }
-            });
+            }
 
-            Button button2 = (Button) view.findViewById(R.id.button2);
+            String imageUrl = list.get(position).thumbnail;
+            ImageLoadTask task = new ImageLoadTask(imageUrl,imageView);
+            task.execute();
+
             button2.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
@@ -188,8 +202,8 @@ public class Popular extends Fragment {
                         FeedTemplate params = FeedTemplate
                                 .newBuilder(ContentObject.newBuilder(list.get(position).title,
                                         list.get(position).thumbnail,
-                                        LinkObject.newBuilder().setWebUrl("https://www.youtube.com/watch?v=" + list.get(position).Id)
-                                                .setMobileWebUrl("https://www.youtube.com/watch?v=" + list.get(position).Id).build())
+                                        LinkObject.newBuilder().setWebUrl("https://www.youtube.com/watch?v="+list.get(position).Id)
+                                                .setMobileWebUrl("https://www.youtube.com/watch?v="+list.get(position).Id).build())
                                         .setDescrption("이미지를 클릭하면 해당 영상의 유튜브 링크로 연결됩니다.")
                                         .build())
                                 .build();
@@ -215,8 +229,7 @@ public class Popular extends Fragment {
                 }
             });
 
-
-            return view;
+            return v;
         }
 
         private void getApplicationContext() {

@@ -16,8 +16,10 @@ import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.BaseAdapter;
 import android.widget.Button;
+import android.widget.CheckBox;
 import android.widget.ImageView;
 import android.widget.ListView;
+import android.widget.TextView;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -61,15 +63,13 @@ public class Jjim extends Fragment {
     Context context;
 
     ArrayList<SongJjimList> list;
-    ArrayList<String> result;
     ArrayList<SongJjimList> songJjimList;
     ArrayList<SingerJjimList> singerJjimList;
     ArrayList<SingerInfoList> singerInfoList;
     ArrayList<SingerInfoList> singerInfoList2;
     ListView listView;
     String singerName;
-
-    private String API_KEY = "AIzaSyAW-uOhuPKkWPW-WCkxt6g6fglqj72jpF0";
+    public boolean isCheck[] = new boolean[15];
 
     DBOpenHelper helper;
     SQLiteDatabase db;
@@ -169,14 +169,11 @@ public class Jjim extends Fragment {
                 public void onItemClick(AdapterView<?> parent, View view,
                                         int position, long id) {
                     Bundle bundle = new Bundle();
-                    bundle.putString("Id", singerJjimList.get(position).Id);
+                    bundle.putString("Id", singerJjimList.get(position).name);
                     bundle.putParcelableArrayList("list", (ArrayList<? extends Parcelable>) singerJjimList);
                     bundle.putInt("firstPosition", position);
                     YoutubeJjim.setArguments(bundle);
                     singerName=singerJjimList.get(position).name;
-
-                    YoutubeAsyncTask youtubeAsyncTask = new YoutubeAsyncTask();
-                    youtubeAsyncTask.execute();
 
                     ((MainActivity) getActivity()).getSupportFragmentManager().beginTransaction().replace(R.id.container, YoutubeJjim).addToBackStack(null).commit();
                 }
@@ -210,30 +207,61 @@ public class Jjim extends Fragment {
 
         @Override
         public View getView(final int position, View convertView, ViewGroup parent) {
-            SingerDetailView view = new SingerDetailView(getContext());
-            Button button = view.findViewById(R.id.button);
+            final Context context = parent.getContext();
+            View v = convertView;
+
+            if (v == null) {
+                LayoutInflater inflater = (LayoutInflater) context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
+                v = inflater.inflate(R.layout.singer_detail, parent, false);
+            }
+            Button button2 = (Button) v.findViewById(R.id.button2);
+            TextView textView = (TextView) v.findViewById(R.id.textView);
+            ImageView imageView=(ImageView) v.findViewById(R.id.imageView);
+            CheckBox favoriteBtn = (CheckBox) v.findViewById(R.id.favorite);
 
             SingerItem item = items.get(position);
-            view.setName(item.getName());
+            textView.setText(item.getName());
 
-            button.setText("삭제");
-            button.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View v) {
-                    helper.deleteSongJjim(songJjimList.get(position).Id);
-                    items.remove(items.get(position));
-                    Log.d("db", songJjimList.get(position).title); //videoId
+            songJjimList = helper.selectSongJjim();
+
+            for (int i = 0; i < songJjimList.size(); i++) {
+                for (int j = 0; j < songJjimList.size(); j++) {
+                    if (songJjimList.get(i).Id.equals(songJjimList.get(j).Id)) {
+                        isCheck[j] = true;
+                    } else if (isCheck[j] == true) {
+                        isCheck[j] = true;
+                    } else if (isCheck[j] == false && !songJjimList.get(i).Id.equals(songJjimList.get(j).Id)){
+                        isCheck[j] = false;
+                    }
                 }
-            });
+            }
 
+            if (item != null) {
+                if (favoriteBtn != null) {
+                    favoriteBtn.setChecked(false);
+                    CheckBox cbox = (CheckBox)(v.findViewById(R.id.favorite));
+                    cbox.setChecked(isCheck[position]);
+                    cbox.setOnClickListener(new View.OnClickListener() {
+                        @Override
+                        public void onClick(View v) {
+                            if(isCheck[position]) {
+                                isCheck[position] = false;
+                                helper.deleteSongJjim(songJjimList.get(position).Id);
+                                //resetSongJjimList();
+                            } else{
+                                isCheck[position] = true;
+                                helper.insertSongJjim(songJjimList.get(position).Id, songJjimList.get(position).title, songJjimList.get(position).thumbnail);
+                            }
+                        }
+                    });
+                    favoriteBtn.setChecked(isCheck[position]);
+                }
+            }
 
-            //카카오톡 공유하기
-            ImageView imageView = view.findViewById(R.id.imageView);
             String imageUrl = songJjimList.get(position).thumbnail;
-            ImageLoadTask task = new ImageLoadTask(imageUrl, imageView);
+            ImageLoadTask task = new ImageLoadTask(imageUrl,imageView);
             task.execute();
 
-            Button button2 = (Button) view.findViewById(R.id.button2);
             button2.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
@@ -241,8 +269,8 @@ public class Jjim extends Fragment {
                         FeedTemplate params = FeedTemplate
                                 .newBuilder(ContentObject.newBuilder(songJjimList.get(position).title,
                                         songJjimList.get(position).thumbnail,
-                                        LinkObject.newBuilder().setWebUrl("https://www.youtube.com/watch?v=" + songJjimList.get(position).Id)
-                                                .setMobileWebUrl("https://www.youtube.com/watch?v=" + songJjimList.get(position).Id).build())
+                                        LinkObject.newBuilder().setWebUrl("https://www.youtube.com/watch?v="+songJjimList.get(position).Id)
+                                                .setMobileWebUrl("https://www.youtube.com/watch?v="+songJjimList.get(position).Id).build())
                                         .setDescrption("이미지를 클릭하면 해당 영상의 유튜브 링크로 연결됩니다.")
                                         .build())
                                 .build();
@@ -268,14 +296,25 @@ public class Jjim extends Fragment {
                 }
             });
 
-
-            return view;
+            return v;
         }
 
         private void getApplicationContext() {
         }
     }
+/*
+    private void resetSongJjimList() {
+        SingerDetailAdapter adapter = (SingerDetailAdapter) listView.getAdapter();
+        adapter.notifyDataSetChanged();
+        listView.setAdapter(adapter);
+    }
 
+    private void resetSingerJjimList() {
+        SingerItemAdapter adapter = (SingerItemAdapter) listView.getAdapter();
+        adapter.notifyDataSetChanged();
+        listView.setAdapter(adapter);
+    }
+*/
     class SingerItemAdapter extends BaseAdapter {
         ArrayList<SingerItem> items = new ArrayList<SingerItem>();
 
@@ -300,23 +339,56 @@ public class Jjim extends Fragment {
 
         @Override
         public View getView(final int position, View convertView, ViewGroup parent) {
-            SingerItemView view = new SingerItemView(getContext());
-            Button button = view.findViewById(R.id.button);
+            final Context context = parent.getContext();
+            View v = convertView;
+
+            if (v == null) {
+                LayoutInflater inflater = (LayoutInflater) context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
+                v = inflater.inflate(R.layout.singer_item, parent, false);
+            }
+            TextView textView = (TextView) v.findViewById(R.id.textView);
+            CheckBox favoriteBtn = (CheckBox) v.findViewById(R.id.favorite);
 
             SingerItem item = items.get(position);
-            view.setName(item.getName());
+            textView.setText(item.getName());
 
-            button.setText("삭제");
-            button.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View v) {
-                    helper.deleteSingerJjim(singerJjimList.get(position).name);
-                    items.remove(items.get(position));
-                    Log.d("db", singerJjimList.get(position).name);
+            singerJjimList = helper.selectSingerJjim();
+
+            for (int i = 0; i < singerJjimList.size(); i++) {
+                for (int j = 0; j < singerJjimList.size(); j++) {
+                    if (singerJjimList.get(i).name.equals(singerJjimList.get(j).name)) {
+                        isCheck[j] = true;
+                    } else if (isCheck[j] == true) {
+                        isCheck[j] = true;
+                    } else if (isCheck[j] == false && !singerJjimList.get(i).name.equals(singerJjimList.get(j).name)){
+                        isCheck[j] = false;
+                    }
                 }
-            });
+            }
 
-            return view;
+            if (item != null) {
+                if (favoriteBtn != null) {
+                    favoriteBtn.setChecked(false);
+                    CheckBox cbox = (CheckBox)(v.findViewById(R.id.favorite));
+                    cbox.setChecked(isCheck[position]);
+                    cbox.setOnClickListener(new View.OnClickListener() {
+                        @Override
+                        public void onClick(View v) {
+                            if(isCheck[position]) {
+                                isCheck[position] = false;
+                                helper.deleteSingerJjim(singerJjimList.get(position).name);
+                                //resetSingerJjimList();
+                            } else{
+                                isCheck[position] = true;
+                                helper.insertSingerJjim(singerJjimList.get(position).name);
+                            }
+                        }
+                    });
+                    favoriteBtn.setChecked(isCheck[position]);
+                }
+            }
+
+            return v;
         }
 
         private void getApplicationContext() {
@@ -394,93 +466,4 @@ public class Jjim extends Fragment {
             imageView.invalidate();
         }
     }
-
-    private class YoutubeAsyncTask extends AsyncTask<Void, Void, Void> {
-        @Override
-        protected void onPreExecute() {
-            super.onPreExecute();
-
-        }
-
-        @Override
-        protected Void doInBackground(Void... voids) {
-            try {
-                HttpTransport HTTP_TRANSPORT = new NetHttpTransport();
-                final JsonFactory JSON_FACTORY = new JacksonFactory();
-                final long NUMBER_OF_VIDEOS_RETURNED = 15;
-
-                YouTube youtube = new YouTube.Builder(HTTP_TRANSPORT, JSON_FACTORY, new HttpRequestInitializer() {
-                    public void initialize(HttpRequest request) throws IOException {
-                    }
-                }).setApplicationName("youtube-search-sample").build();
-
-                YouTube.Search.List search = youtube.search().list("id,snippet");
-
-                search.setKey(API_KEY);
-
-                search.setQ(singerName);
-                search.setOrder("relevance"); //date relevance
-
-                search.setType("video");
-
-                search.setFields("items(id/kind,id/videoId,snippet/title,snippet/thumbnails/default/url)");
-                search.setMaxResults(NUMBER_OF_VIDEOS_RETURNED);
-                SearchListResponse searchResponse = search.execute();
-
-                List<SearchResult> searchResultList = searchResponse.getItems();
-
-                if (searchResultList != null) {
-                    prettyPrint(searchResultList.iterator(), singerName);
-                }
-            } catch (GoogleJsonResponseException e) {
-                System.err.println("There was a service error: " + e.getDetails().getCode() + " : "
-                        + e.getDetails().getMessage());
-                System.err.println("There was a service error 2: " + e.getLocalizedMessage() + " , " + e.toString());
-            } catch (IOException e) {
-                System.err.println("There was an IO error: " + e.getCause() + " : " + e.getMessage());
-            } catch (Throwable t) {
-                t.printStackTrace();
-            }
-
-            return null;
-        }
-
-        @Override
-        protected void onPostExecute(Void aVoid) {
-            super.onPostExecute(aVoid);
-            Fragment singerDetailFragment = new SingerDetail();
-            singerInfoList = singerInfoList2;
-
-            Bundle bundle=new Bundle();
-            bundle.putParcelableArrayList("singerInfoList",(ArrayList<? extends Parcelable>) singerInfoList);
-            singerDetailFragment.setArguments(bundle);
-            Log.d(TAG,singerInfoList.get(0).title);
-
-            ((MainActivity)getActivity()).getSupportFragmentManager().beginTransaction().replace(R.id.container, singerDetailFragment).addToBackStack(null).commit();
-        }
-
-        public void prettyPrint(Iterator<SearchResult> iteratorSearchResults, String query) {
-            if (!iteratorSearchResults.hasNext()) {
-                System.out.println(" There aren't any results for your query.");
-            }
-
-            StringBuilder sb = new StringBuilder();
-
-            singerInfoList2 = new ArrayList<>();
-
-            while (iteratorSearchResults.hasNext()) {
-                SearchResult singleVideo = iteratorSearchResults.next();
-                ResourceId rId = singleVideo.getId();
-
-                if (rId.getKind().equals("youtube#video")) {
-                    Thumbnail thumbnail = (Thumbnail) singleVideo.getSnippet().getThumbnails().get("default");
-                    singerInfoList2.add(new SingerInfoList(singleVideo.getSnippet().getTitle(),rId.getVideoId(),thumbnail.getUrl()));
-                    Log.d(TAG,singerInfoList2.get(0).title);
-                }
-
-            }
-        }
-    }
-
-
 }

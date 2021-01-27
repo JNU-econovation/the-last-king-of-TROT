@@ -1,9 +1,6 @@
 package com.example.trotwithtabs;
 
-import android.app.Activity;
-import android.app.Application;
 import android.content.Context;
-import android.content.Intent;
 import android.database.sqlite.SQLiteDatabase;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
@@ -17,6 +14,7 @@ import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.BaseAdapter;
 import android.widget.Button;
+import android.widget.CheckBox;
 import android.widget.ImageView;
 import android.widget.ListView;
 import android.widget.TextView;
@@ -25,25 +23,22 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 
-import com.google.android.material.tabs.TabLayout;
-
-import java.net.URL;
-import java.util.ArrayList;
-import java.util.List;
-
-import nodeal.example.you_tube_recyclerview.YoutubeSinger;
-
 import com.kakao.kakaolink.v2.KakaoLinkResponse;
 import com.kakao.kakaolink.v2.KakaoLinkService;
-import com.kakao.message.template.ButtonObject;
 import com.kakao.message.template.ContentObject;
 import com.kakao.message.template.FeedTemplate;
 import com.kakao.message.template.LinkObject;
 import com.kakao.network.ErrorResult;
 import com.kakao.network.callback.ResponseCallback;
 
+import java.net.URL;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
+
+import org.apache.commons.lang3.StringEscapeUtils;
+
+import nodeal.example.you_tube_recyclerview.YoutubeSinger;
 
 public class SingerDetail extends Fragment {
     MainActivity activity;
@@ -58,7 +53,8 @@ public class SingerDetail extends Fragment {
     String Id;
     String thumbnail;
     int i = 0;
-
+    public boolean isCheck[] = new boolean[15];
+    ArrayList<SongJjimList> songJjimList;
     
     private View header;
 
@@ -95,7 +91,7 @@ public class SingerDetail extends Fragment {
             SingerDetailAdapter adapter = new SingerDetailAdapter();
 
             for (int i = 0; i < 15; i++) {
-                adapter.addItem(new SingerItem(list.get(i).title));
+                adapter.addItem(new SingerItem(StringEscapeUtils.unescapeHtml3(list.get(i).title)));
             }
 
             listView.setAdapter(adapter);
@@ -158,68 +154,87 @@ public class SingerDetail extends Fragment {
 
         @Override
         public View getView(final int position, View convertView, ViewGroup parent) {
-            final SingerDetailView view = new SingerDetailView(getContext());
+            final Context context = parent.getContext();
+            View v = convertView;
+
+            if (v == null) {
+                LayoutInflater inflater = (LayoutInflater) context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
+                v = inflater.inflate(R.layout.singer_detail, parent, false);
+            }
+            Button button2 = (Button) v.findViewById(R.id.button2);
+            TextView textView = (TextView) v.findViewById(R.id.textView);
+            ImageView imageView=(ImageView) v.findViewById(R.id.imageView);
+            CheckBox favoriteBtn = (CheckBox) v.findViewById(R.id.favorite);
 
             SingerItem item = items.get(position);
-            view.setName(item.getName());
+            textView.setText(item.getName());
 
-            ImageView imageView = view.findViewById(R.id.imageView);
+            songJjimList = helper.selectSongJjim();
+
+            for (int i = 0; i < songJjimList.size(); i++) {
+                for (int j = 0; j < list.size(); j++) {
+                    if (songJjimList.get(i).Id.equals(list.get(j).Id)) {
+                        isCheck[j] = true;
+                    } else if (isCheck[j] == true) {
+                        isCheck[j] = true;
+                    } else if (isCheck[j] == false && !songJjimList.get(i).Id.equals(list.get(j).Id)){
+                        isCheck[j] = false;
+                    }
+                }
+            }
+
+            if (item != null) {
+                if (favoriteBtn != null) {
+                    favoriteBtn.setChecked(false);
+                    CheckBox cbox = (CheckBox)(v.findViewById(R.id.favorite));
+                    cbox.setChecked(isCheck[position]);
+                    cbox.setOnClickListener(new View.OnClickListener() {
+                        @Override
+                        public void onClick(View v) {
+                            if(isCheck[position]) {
+                                isCheck[position] = false;
+                                helper.deleteSongJjim(list.get(position).Id);
+                            } else{
+                                isCheck[position] = true;
+                                helper.insertSongJjim(list.get(position).Id, list.get(position).title, list.get(position).thumbnail);
+                            }
+                        }
+                    });
+                    favoriteBtn.setChecked(isCheck[position]);
+                }
+            }
+
             String imageUrl = list.get(position).thumbnail;
             ImageLoadTask task = new ImageLoadTask(imageUrl,imageView);
             task.execute();
 
-            final Button button = (Button) view.findViewById(R.id.button);
-
-            singerJjimList = helper.selectSingerJjim();
-
-            button.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View v) {
-                    try {
-                        i += 1;
-                        if (button.getText().equals("찜")) {
-                            helper.insertSongJjim(list.get(position).Id, list.get(position).title, list.get(position).thumbnail);
-                            Log.d("DB", "노래 찜 추가됨");
-                            button.setText("취소");
-                        } else {
-                            button.setText("찜");
-                            helper.deleteSingerJjim(list.get(position).title);
-                        }
-                    } catch (Exception e) {
-                        System.err.println("오류 있음 " + e.getMessage() + e.getCause());
-                    }
-                }
-            });
-
-            Button button2 = (Button) view.findViewById(R.id.button2);
             button2.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
                     try {
+                        FeedTemplate params = FeedTemplate
+                                .newBuilder(ContentObject.newBuilder(list.get(position).title,
+                                        list.get(position).thumbnail,
+                                        LinkObject.newBuilder().setWebUrl("https://www.youtube.com/watch?v="+list.get(position).Id)
+                                                .setMobileWebUrl("https://www.youtube.com/watch?v="+list.get(position).Id).build())
+                                        .setDescrption("이미지를 클릭하면 해당 영상의 유튜브 링크로 연결됩니다.")
+                                        .build())
+                                .build();
 
-                            FeedTemplate params = FeedTemplate
-                                    .newBuilder(ContentObject.newBuilder(list.get(position).title,
-                                            list.get(position).thumbnail,
-                                            LinkObject.newBuilder().setWebUrl("https://www.youtube.com/watch?v="+list.get(position).Id)
-                                                    .setMobileWebUrl("https://www.youtube.com/watch?v="+list.get(position).Id).build())
-                                            .setDescrption("이미지를 클릭하면 해당 영상의 유튜브 링크로 연결됩니다.")
-                                            .build())
-                                    .build();
-
-                            Map<String, String> serverCallbackArgs = new HashMap<String, String>();
-                            serverCallbackArgs.put("user_id", "${current_user_id}");
-                            serverCallbackArgs.put("product_id", "${shared_product_id}");
+                        Map<String, String> serverCallbackArgs = new HashMap<String, String>();
+                        serverCallbackArgs.put("user_id", "${current_user_id}");
+                        serverCallbackArgs.put("product_id", "${shared_product_id}");
 
 
-                            KakaoLinkService.getInstance().sendDefault(getContext(), params, new ResponseCallback<KakaoLinkResponse>() {
-                                @Override
-                                public void onFailure(ErrorResult errorResult) {
-                                }
+                        KakaoLinkService.getInstance().sendDefault(getContext(), params, new ResponseCallback<KakaoLinkResponse>() {
+                            @Override
+                            public void onFailure(ErrorResult errorResult) {
+                            }
 
-                                @Override
-                                public void onSuccess(KakaoLinkResponse result) {
-                                }
-                            });
+                            @Override
+                            public void onSuccess(KakaoLinkResponse result) {
+                            }
+                        });
 
                     } catch (Exception e) {
                         System.err.println("오류 있음 " + e.getMessage() + e.getCause());
@@ -227,7 +242,7 @@ public class SingerDetail extends Fragment {
                 }
             });
 
-            return view;
+            return v;
         }
 
         private void getApplicationContext() {
