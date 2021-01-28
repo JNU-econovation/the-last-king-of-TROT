@@ -219,8 +219,7 @@ public class MainActivity extends AppCompatActivity {
                 search.setKey("AIzaSyBMMHD7X6Gd3b5givUBcMjClmKkWqU4Exw");
 
                 search.setQ("트로트");
-                // search.setChannelId("UCk9GmdlDTBfgGRb7vXeRMoQ"); //레드벨벳 공식 유투브 채널
-                search.setOrder("relevance"); //date relevance
+                search.setOrder("relevance");
 
                 search.setType("video");
 
@@ -270,7 +269,6 @@ public class MainActivity extends AppCompatActivity {
                 SearchResult singleVideo = iteratorSearchResults.next();
                 ResourceId rId = singleVideo.getId();
 
-                // Double checks the kind is video.
                 if (rId.getKind().equals("youtube#video")) {
 
                     Thumbnail thumbnail = (Thumbnail) singleVideo.getSnippet().getThumbnails().get("default");
@@ -360,8 +358,7 @@ public class MainActivity extends AppCompatActivity {
                 search.setKey("AIzaSyBMMHD7X6Gd3b5givUBcMjClmKkWqU4Exw");
 
                 search.setQ(searchStr);
-                // search.setChannelId("UCk9GmdlDTBfgGRb7vXeRMoQ"); //레드벨벳 공식 유투브 채널
-                search.setOrder("relevance"); //date relevance
+                search.setOrder("relevance");
 
                 search.setType("video");
 
@@ -391,7 +388,7 @@ public class MainActivity extends AppCompatActivity {
         protected void onPostExecute(Void aVoid) {
             super.onPostExecute(aVoid);
             fragment2 = new Popular();
-            singerInfoList=singerInfoList2;
+            singerInfoList = singerInfoList2;
 
             Bundle bundle=new Bundle();
             bundle.putParcelableArrayList("singerInfoList",(ArrayList<? extends Parcelable>) singerInfoList);

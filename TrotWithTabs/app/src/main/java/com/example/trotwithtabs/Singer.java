@@ -16,6 +16,7 @@ import android.widget.Button;
 import android.widget.CheckBox;
 import android.widget.ListView;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -264,10 +265,11 @@ public class Singer extends Fragment {
                             if(isCheck[position]) {
                                 isCheck[position] = false;
                                 helper.deleteSingerJjim(list_singer[position]);
-                                //resetSingerJjimList();
+                                Toast.makeText(getContext(), "찜을 취소했습니다.", Toast.LENGTH_SHORT).show();
                             } else{
                                 isCheck[position] = true;
                                 helper.insertSingerJjim(list_singer[position]);
+                                Toast.makeText(getContext(), list_singer[position] + "을(를) 찜했습니다.", Toast.LENGTH_SHORT).show();
                             }
                         }
                     });

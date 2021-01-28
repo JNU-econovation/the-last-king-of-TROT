@@ -18,6 +18,7 @@ import android.widget.CheckBox;
 import android.widget.ImageView;
 import android.widget.ListView;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -196,9 +197,11 @@ public class SingerDetail extends Fragment {
                             if(isCheck[position]) {
                                 isCheck[position] = false;
                                 helper.deleteSongJjim(list.get(position).Id);
+                                Toast.makeText(getContext(), "찜을 취소했습니다.", Toast.LENGTH_SHORT).show();
                             } else{
                                 isCheck[position] = true;
                                 helper.insertSongJjim(list.get(position).Id, list.get(position).title, list.get(position).thumbnail);
+                                Toast.makeText(getContext(), "노래를 찜했습니다.", Toast.LENGTH_SHORT).show();
                             }
                         }
                     });
