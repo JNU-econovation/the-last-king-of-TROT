@@ -11,37 +11,26 @@
         android:text="편성정보 안내"
         android:textAlignment="center"
         android:textColor="#060707"
-        android:textSize="24sp"
-        android:textStyle="bold" />
+        android:textSize="18sp"
+        android:textStyle="bold"
+        android:layout_marginTop="15dp"/>
 
     <CalendarView
         android:id="@+id/calendarView"
         android:layout_width="411dp"
-        android:layout_height="359dp"
+        android:layout_height="wrap_content"
         android:layout_gravity="center" />
-
-    <TextView
-        android:id="@+id/textViewCalendar"
-        android:layout_width="350dp"
-        android:layout_height="140dp"
-        android:layout_gravity="center"
-        android:background="@drawable/textbackground"
-        android:text="원하는 날짜를 클릭하세요!"
-        android:textAlignment="center"
-        android:textColor="#090808"
-        android:textSize="18sp"
-        android:lineSpacingExtra ="5dp" />
 
     <TextView
         android:id="@+id/textViewInform"
         android:layout_width="350dp"
-        android:layout_height="350dp"
+        android:layout_height="200dp"
         android:layout_gravity="center"
         android:background="@drawable/textbackground"
+        android:lineSpacingExtra="5dp"
         android:textAlignment="center"
         android:textColor="#100F0F"
         android:textSize="18sp"
-        android:lineSpacingExtra ="5dp"
-        />
+        android:layout_marginTop="25dp"/>
 
 </LinearLayout>

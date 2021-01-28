@@ -216,7 +216,7 @@ public class MainActivity extends AppCompatActivity {
 
                 YouTube.Search.List search = youtube.search().list("id,snippet");
 
-                search.setKey("AIzaSyBMMHD7X6Gd3b5givUBcMjClmKkWqU4Exw");
+                search.setKey("AIzaSyDfc22EX6l8gpLQNEV_6EPRG-5Z2N4Lod8");
 
                 search.setQ("트로트");
                 search.setOrder("relevance");
@@ -355,7 +355,7 @@ public class MainActivity extends AppCompatActivity {
 
                 YouTube.Search.List search = youtube.search().list("id,snippet");
 
-                search.setKey("AIzaSyBMMHD7X6Gd3b5givUBcMjClmKkWqU4Exw");
+                search.setKey("AIzaSyDfc22EX6l8gpLQNEV_6EPRG-5Z2N4Lod8");
 
                 search.setQ(searchStr);
                 search.setOrder("relevance");
