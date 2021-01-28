@@ -133,7 +133,7 @@ public class Singer extends Fragment {
 
                 YouTube.Search.List search = youtube.search().list("id,snippet");
 
-                search.setKey("AIzaSyDfc22EX6l8gpLQNEV_6EPRG-5Z2N4Lod8");
+                search.setKey(getString(R.string.youtube_api_key));
 
                 singerName=list_singer[singerPosition];
                 search.setQ(singerName);
