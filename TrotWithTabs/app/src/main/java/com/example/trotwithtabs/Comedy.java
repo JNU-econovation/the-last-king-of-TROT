@@ -40,7 +40,7 @@ public class Comedy extends Fragment {
 
     int querySize;
     int singerPosition;
-    String[] list_singer = {"뽕숭아학당","사랑의 콜센타","트롯 전국체전","트로트의 민족", "내일은 미스트롯2", "가요무대"};
+    String[] list_singer = {"뽕숭아학당","사랑의 콜센타","트롯 전국체전","트로트의 민족", "미스트롯1", "미스트롯2", "미스터트롯", "가요무대", "보이스트롯"};
     ArrayList<SingerInfoList> singerInfoList;
     ArrayList<SingerInfoList> singerInfoList2;
 

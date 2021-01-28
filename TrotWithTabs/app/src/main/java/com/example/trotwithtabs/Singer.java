@@ -52,7 +52,7 @@ public class Singer extends Fragment {
 
     private String result;
     int singerPosition;
-    String[] list_singer = {"임영웅","정동원","이찬원","영탁","김호중","장민호","김희재","조명섭","송가인","나훈아","장윤정"};
+    String[] list_singer = {"임영웅","정동원","이찬원","영탁","김호중","장민호","김희재","조명섭","송가인","나훈아","장윤정","김용임","강진","금잔디","김연자","남진","박상철","박현빈","설운도","송대관","심수봉","신유","요요미","이미자","정미애","조항조","주현미","진성","태진아","하춘화","현철","홍자","홍진영"};
     ArrayList<SingerInfoList> singerInfoList;
     ArrayList<SingerInfoList> singerInfoList2;
     String singerName;
