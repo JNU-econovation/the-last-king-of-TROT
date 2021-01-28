@@ -20,6 +20,7 @@ import android.widget.CheckBox;
 import android.widget.ImageView;
 import android.widget.ListView;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -46,6 +47,7 @@ import com.kakao.message.template.LinkObject;
 import com.kakao.network.ErrorResult;
 import com.kakao.network.callback.ResponseCallback;
 
+import org.apache.commons.lang3.StringEscapeUtils;
 import org.json.JSONArray;
 import org.json.JSONException;
 
@@ -138,7 +140,7 @@ public class Jjim extends Fragment {
             singerDetailAdapter = new SingerDetailAdapter();
 
             for (int i = 0; i < songJjimList.size(); i++) {
-                singerDetailAdapter.addItem(new SingerItem(songJjimList.get(i).title));
+                singerDetailAdapter.addItem(new SingerItem(StringEscapeUtils.unescapeHtml3(songJjimList.get(i).title)));
             }
 
             listView.setAdapter(singerDetailAdapter);
@@ -166,7 +168,7 @@ public class Jjim extends Fragment {
 
 
             for (int i = 0; i < singerJjimList.size(); i++) {
-                singerItemAdapter.addItem(new SingerItem(singerJjimList.get(i).name));
+                singerItemAdapter.addItem(new SingerItem(StringEscapeUtils.unescapeHtml3(singerJjimList.get(i).name)));
             }
 
             listView.setAdapter(singerItemAdapter);
@@ -248,6 +250,7 @@ public class Jjim extends Fragment {
                             if(isCheck[position]) {
                                 isCheck[position] = false;
                                 helper.deleteSongJjim(songJjimList.get(position).Id);
+                                Toast.makeText(getContext(), "찜을 취소했습니다.", Toast.LENGTH_SHORT).show();
                                 refresh();
                             } else{
                                 isCheck[position] = true;
@@ -366,8 +369,8 @@ public class Jjim extends Fragment {
                             if(isCheck[position]) {
                                 isCheck[position] = false;
                                 helper.deleteSingerJjim(singerJjimList.get(position).name);
+                                Toast.makeText(getContext(), "찜을 취소했습니다.", Toast.LENGTH_SHORT).show();
                                 refresh();
-                                getSingerJjimList();
                             } else{
                                 isCheck[position] = true;
                                 helper.insertSingerJjim(singerJjimList.get(position).name);

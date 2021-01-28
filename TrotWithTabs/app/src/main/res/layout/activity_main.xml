@@ -14,13 +14,13 @@
             android:theme="@style/ThemeOverlay.AppCompat.Dark.ActionBar">
 
             <androidx.appcompat.widget.Toolbar
+                android:id="@+id/toolbar"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:background="@color/colorPrimaryDark"
-                android:theme="@style/ThemeOverlay.AppCompat.Dark"
+                android:background="?attr/colorPrimary"
                 android:elevation="1dp"
-                android:id="@+id/toolbar">
-
+                android:theme="@style/Toolbar"
+                app:popupTheme="@style/ThemeOverlay.AppCompat.Light">
             </androidx.appcompat.widget.Toolbar>
 
             <com.google.android.material.tabs.TabLayout
@@ -33,7 +33,7 @@
                 app:tabMode="fixed"
                 app:tabSelectedTextColor="@color/colorAccent"
                 app:tabTextAppearance="@style/TextAppearance.AppCompat.Medium"
-                app:tabTextColor="@color/colorPrimary">
+                app:tabTextColor="#E54A59">
 
             </com.google.android.material.tabs.TabLayout>
         </com.google.android.material.appbar.AppBarLayout>

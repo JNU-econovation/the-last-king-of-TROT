@@ -102,7 +102,7 @@ public class Comedy extends Fragment {
 
                 String singerName = list_singer[singerPosition];
                 YouTube.Search.List search = youtube.search().list("id,snippet");
-                search.setKey("AIzaSyBMMHD7X6Gd3b5givUBcMjClmKkWqU4Exw");
+                search.setKey("AIzaSyDfc22EX6l8gpLQNEV_6EPRG-5Z2N4Lod8");
                 search.setQ(singerName);
                 search.setOrder("relevance");
                 search.setType("video");
