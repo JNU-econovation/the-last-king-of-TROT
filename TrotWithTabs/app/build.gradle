@@ -8,7 +8,7 @@ android {
     buildToolsVersion "30.0.2"
 
     defaultConfig {
-        applicationId "com.example.trotwithtabs"
+        applicationId "com.trot.trotwithtabs"
         minSdkVersion 21
         targetSdkVersion 30
         versionCode 1
@@ -30,6 +30,17 @@ android {
     compileOptions {
         sourceCompatibility JavaVersion.VERSION_1_8
         targetCompatibility JavaVersion.VERSION_1_8
+    }
+    configurations {
+        all {
+            exclude group: 'commons-logging', module: 'commons-logging'
+        }
+    }
+    lintOptions {
+        checkReleaseBuilds false
+        // Or, if you prefer, you can continue to check for errors in release builds,
+        // but continue the build even when errors are found:
+        abortOnError false
     }
 }
 
