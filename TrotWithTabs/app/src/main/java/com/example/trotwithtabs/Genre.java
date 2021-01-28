@@ -116,7 +116,7 @@ public class Genre extends Fragment {
 
                 YouTube.Search.List search = youtube.search().list("id,snippet");
 
-                search.setKey("AIzaSyBMMHD7X6Gd3b5givUBcMjClmKkWqU4Exw");
+                search.setKey("AIzaSyDfc22EX6l8gpLQNEV_6EPRG-5Z2N4Lod8");
 
                 String genreName=list_genre[genrePosition];
                 //검색어 들어가는 부분
