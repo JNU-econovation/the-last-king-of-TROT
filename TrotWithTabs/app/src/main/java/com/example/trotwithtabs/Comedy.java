@@ -4,6 +4,7 @@ import android.content.Context;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.os.Parcelable;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -102,7 +103,7 @@ public class Comedy extends Fragment {
 
                 String singerName = list_singer[singerPosition];
                 YouTube.Search.List search = youtube.search().list("id,snippet");
-                search.setKey("AIzaSyDfc22EX6l8gpLQNEV_6EPRG-5Z2N4Lod8");
+                search.setKey(getString(R.string.youtube_api_key));
                 search.setQ(singerName);
                 search.setOrder("relevance");
                 search.setType("video");
