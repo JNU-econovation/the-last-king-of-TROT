@@ -26,13 +26,10 @@ import androidx.recyclerview.widget.DefaultItemAnimator;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
-import com.example.trotwithtabs.DBOpenHelper;
-import com.example.trotwithtabs.GenreDetailView;
-import com.example.trotwithtabs.GenreInfoList;
-import com.example.trotwithtabs.GenreItem;
-import com.example.trotwithtabs.R;
-import com.example.trotwithtabs.SingerJjimList;
-import com.example.trotwithtabs.SongJjimList;
+import com.trot.trotwithtabs.DBOpenHelper;
+import com.trot.trotwithtabs.GenreItem;
+import com.trot.trotwithtabs.R;
+import com.trot.trotwithtabs.SongJjimList;
 import com.kakao.kakaolink.v2.KakaoLinkResponse;
 import com.kakao.kakaolink.v2.KakaoLinkService;
 import com.kakao.message.template.ContentObject;
