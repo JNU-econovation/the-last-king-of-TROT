@@ -100,6 +100,9 @@ public class MainActivity extends AppCompatActivity {
 
        Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
+        getSupportActionBar().setDisplayShowCustomEnabled(false);
+        getSupportActionBar().setTitle("");
+        getSupportActionBar().setIcon(R.drawable.logo_text);
 
         fragment0 = new Home();
         fragment1 = new Genre();

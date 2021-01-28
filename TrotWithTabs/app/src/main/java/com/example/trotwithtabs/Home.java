@@ -63,7 +63,7 @@ public class Home extends Fragment {
                builder.show();
             }
         });
-
+/*
         TextView textViewInfo = rootView.findViewById(R.id.textViewInform);
         String textInform="행사 및 정보"+"\n"+"송가인 영화, 설 명절 극장 개봉 확정"+"\n"+"영탁, 발라드 트로트로 컴백 중비중";
         //특정 글자 진하게
@@ -72,7 +72,7 @@ public class Home extends Fragment {
         int start2 = textInform.indexOf(word2);
         int end2 = start2 + word2.length();
         spannableString2.setSpan(new StyleSpan(Typeface.BOLD),start2,end2, Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
-        textViewInfo.setText(spannableString2);
+        textViewInfo.setText(spannableString2);*/
 
         return rootView;
     }

@@ -6,14 +6,15 @@
 
     <TextView
         android:id="@+id/textView2"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:text="편성정보 안내"
+        android:layout_width="119dp"
+        android:layout_height="46dp"
+        android:layout_marginTop="35dp"
+        android:background="@drawable/image1"
         android:textAlignment="center"
+        android:layout_gravity="center"
         android:textColor="#060707"
         android:textSize="18sp"
-        android:textStyle="bold"
-        android:layout_marginTop="15dp"/>
+        android:textStyle="bold" />
 
     <CalendarView
         android:id="@+id/calendarView"
@@ -23,14 +24,14 @@
 
     <TextView
         android:id="@+id/textViewInform"
-        android:layout_width="350dp"
-        android:layout_height="200dp"
+        android:layout_width="380dp"
+        android:layout_height="112dp"
         android:layout_gravity="center"
-        android:background="@drawable/textbackground"
+        android:layout_marginTop="25dp"
+        android:background="@drawable/image2"
         android:lineSpacingExtra="5dp"
         android:textAlignment="center"
         android:textColor="#100F0F"
-        android:textSize="18sp"
-        android:layout_marginTop="25dp"/>
+        android:textSize="18sp" />
 
 </LinearLayout>
