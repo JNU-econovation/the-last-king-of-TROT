@@ -4,6 +4,14 @@ def Properties properties = new Properties()
 properties.load(project.rootProject.file("local.properties").newDataInputStream())
 
 android {
+    signingConfigs {
+        release {
+            storeFile file('C:\\Users\\asong\\the-last-king-of-TROT\\TrotWithTabs\\appKey\\releaseKey.jks')
+            storePassword 'ggimjjang'
+            keyAlias 'release'
+            keyPassword 'ggimjjang'
+        }
+    }
     compileSdkVersion 30
     buildToolsVersion "30.0.2"
 
